@@ -5,7 +5,6 @@ All of the models are stored in this module
 """
 from cgi import print_exception
 from ctypes import addressof
-from curses import ACS_GEQUAL
 import logging
 from ssl import create_default_context
 from flask_sqlalchemy import SQLAlchemy
@@ -28,7 +27,7 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
 
-class YourResourceModel(db.Model):
+class YourResourceModel():
     """
     Class that represents a YourResourceModel
     """
@@ -134,7 +133,7 @@ class Item(db.Model, YourResourceModel):
     name = db.Column(db.String(64))
     category = db.Column(db.String(64))
     price = db.Column(db.Float)
-    description = name = db.Column(db.String(64))    
+    description = name = db.Column(db.String(100))    
 
     def serialize(self):
         """Serializes an Item into a dictionary"""
@@ -240,7 +239,7 @@ class User(db.Model, YourResourceModel):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     age = db.Column(db.Integer)
-    address = db.Column(db.String(64))
+    address = db.Column(db.String(100))
     wishlists = db.relationship("Wishlist", backref="wishlist", passive_deletes=True)
 
     def serialize(self):
@@ -274,7 +273,6 @@ class User(db.Model, YourResourceModel):
                 wishlist.deserialize(json_wishlist)
                 self.wishlists.append(wishlist)
 
-            
         except KeyError as error:
             raise DataValidationError("Invalid User: missing " + error.args[0]) from error
         except TypeError as error:
