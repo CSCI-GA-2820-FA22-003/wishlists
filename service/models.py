@@ -20,7 +20,9 @@ db = SQLAlchemy()
 # Function to initialize the database
 def init_db(app):
     """ Initializes the SQLAlchemy app """
-    YourResourceModel.init_db(app)
+    Item.init_db(app)
+    Wishlist.init_db(app)
+    User.init_db(app)
 
 
 class DataValidationError(Exception):
@@ -133,7 +135,7 @@ class Item(db.Model, YourResourceModel):
     name = db.Column(db.String(64))
     category = db.Column(db.String(64))
     price = db.Column(db.Float)
-    description = name = db.Column(db.String(100))    
+    description = db.Column(db.String(100))
 
     def serialize(self):
         """Serializes an Item into a dictionary"""
