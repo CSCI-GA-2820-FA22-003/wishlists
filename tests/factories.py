@@ -3,20 +3,7 @@ from datetime import date
 import factory
 import random
 from factory.fuzzy import FuzzyChoice, FuzzyDate
-from service.models import User, Wishlist, Item
-
-class UserFactory(factory.Factory):
-    """Creates fake Users"""
-
-    # pylint: disable=too-few-public-methods
-    class Meta:
-        """Persistent class"""
-        model = User
-
-    id = factory.Sequence(lambda n: n)
-    name = factory.Faker("name")
-    age = random.randint(18, 80)
-    address = factory.Faker("address")
+from service.models import Wishlist, Item
 
 
 class WishlistFactory(factory.Factory):
@@ -28,7 +15,7 @@ class WishlistFactory(factory.Factory):
         model = Wishlist
 
     id = factory.Sequence(lambda n: n)
-    user_id = factory.SubFactory(UserFactory)
+    user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
     createdAt = FuzzyDate(date(2008, 1, 1))
     lastUpdated = FuzzyDate(date(2008, 1, 1))

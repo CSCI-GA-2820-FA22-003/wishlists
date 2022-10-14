@@ -21,8 +21,7 @@ db = SQLAlchemy()
 def init_db(app):
     """ Initializes the SQLAlchemy app """
     Item.init_db(app)
-    Wishlist.init_db(app)
-    User.init_db(app)
+    Wishlist.init_db(app)    
 
 
 class DataValidationError(Exception):
@@ -179,8 +178,8 @@ class Wishlist(db.Model, PersistentBase):
     Class that represents a Wishlist
     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)    
+    user_id = db.Column(db.Integer)
     name = db.Column(db.String(64))
     createdAt = db.Column(db.DateTime(timezone=True), server_default=func.now())
     lastUpdated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
@@ -230,56 +229,56 @@ class Wishlist(db.Model, PersistentBase):
             ) from error
         return self
 
-######################################################################
-#  U S E R   M O D E L
-######################################################################
-class User(db.Model, PersistentBase):
-    """
-    Class that represents a User
-    """
+# ######################################################################
+# #  U S E R   M O D E L
+# ######################################################################
+# class User(db.Model, PersistentBase):
+#     """
+#     Class that represents a User
+#     """
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    age = db.Column(db.Integer)
-    address = db.Column(db.String(100))
-    wishlists = db.relationship("Wishlist", backref="wishlist", passive_deletes=True)
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(64))
+#     age = db.Column(db.Integer)
+#     address = db.Column(db.String(100))
+#     wishlists = db.relationship("Wishlist", backref="wishlist", passive_deletes=True)
 
-    def serialize(self):
-        """Serializes a User into a dictionary"""
-        user = {
-            "id": self.id,
-            "name": self.name,
-            "age": self.age,
-            "address": self.address,
-            "wishlists": [],
-        }
-        for wishlist in self.wishlists:
-            user["wishlists"].append(wishlist.serialize())
-        return user
+#     def serialize(self):
+#         """Serializes a User into a dictionary"""
+#         user = {
+#             "id": self.id,
+#             "name": self.name,
+#             "age": self.age,
+#             "address": self.address,
+#             "wishlists": [],
+#         }
+#         for wishlist in self.wishlists:
+#             user["wishlists"].append(wishlist.serialize())
+#         return user
 
-    def deserialize(self, data):
-        """
-        Deserializes a User from a dictionary
-        Args:
-            data (dict): A dictionary containing the resource data
-        """
-        try:
-            self.id = data["id"]            
-            self.name = data["name"]
-            self.age = data["age"]
-            self.address = data["address"]            
-            # handle inner list of items
-            wishlists_list = data.get("wishlists")
-            for json_wishlist in wishlists_list:
-                wishlist = Wishlist()
-                wishlist.deserialize(json_wishlist)
-                self.wishlists.append(wishlist)
+#     def deserialize(self, data):
+#         """
+#         Deserializes a User from a dictionary
+#         Args:
+#             data (dict): A dictionary containing the resource data
+#         """
+#         try:
+#             self.id = data["id"]            
+#             self.name = data["name"]
+#             self.age = data["age"]
+#             self.address = data["address"]            
+#             # handle inner list of items
+#             wishlists_list = data.get("wishlists")
+#             for json_wishlist in wishlists_list:
+#                 wishlist = Wishlist()
+#                 wishlist.deserialize(json_wishlist)
+#                 self.wishlists.append(wishlist)
 
-        except KeyError as error:
-            raise DataValidationError("Invalid User: missing " + error.args[0]) from error
-        except TypeError as error:
-            raise DataValidationError(
-                "Invalid User: body of request contained "
-                "bad or no data - " + error.args[0]
-            ) from error
-        return self
+#         except KeyError as error:
+#             raise DataValidationError("Invalid User: missing " + error.args[0]) from error
+#         except TypeError as error:
+#             raise DataValidationError(
+#                 "Invalid User: body of request contained "
+#                 "bad or no data - " + error.args[0]
+#             ) from error
+#         return self
