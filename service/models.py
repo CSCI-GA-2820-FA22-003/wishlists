@@ -29,9 +29,9 @@ class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
 
 
-class YourResourceModel():
+class PersistentBase():
     """
-    Class that represents a YourResourceModel
+    Class that represents a PersistentBase
     """
 
     app = None
@@ -41,11 +41,11 @@ class YourResourceModel():
     name = db.Column(db.String(63))
 
     def __repr__(self):
-        return f"<YourResourceModel {self.name} id=[{self.id}]>"
+        return f"<PersistentBase {self.name} id=[{self.id}]>"
 
     def create(self):
         """
-        Creates a YourResourceModel to the database
+        Creates an entity in the database
         """
         logger.info("Creating %s", self.name)
         self.id = None  # pylint: disable=invalid-name
@@ -54,24 +54,24 @@ class YourResourceModel():
 
     def update(self):
         """
-        Updates a YourResourceModel to the database
+        Updates an entity in the database
         """
         logger.info("Saving %s", self.name)
         db.session.commit()
 
     def delete(self):
-        """ Removes a YourResourceModel from the data store """
+        """ Removes an entity from the data store """
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a YourResourceModel into a dictionary """
+        """ Serializes an entity into a dictionary """
         return {"id": self.id, "name": self.name}
 
     def deserialize(self, data):
         """
-        Deserializes a YourResourceModel from a dictionary
+        Deserializes an entity from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
@@ -80,11 +80,11 @@ class YourResourceModel():
             self.name = data["name"]
         except KeyError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: missing " + error.args[0]
+                "Invalid entity: missing " + error.args[0]
             ) from error
         except TypeError as error:
             raise DataValidationError(
-                "Invalid YourResourceModel: body of request contained bad or no data - "
+                "Invalid entity: body of request contained bad or no data - "
                 "Error message: " + error
             ) from error
         return self
@@ -101,22 +101,22 @@ class YourResourceModel():
 
     @classmethod
     def all(cls):
-        """ Returns all of the YourResourceModels in the database """
-        logger.info("Processing all YourResourceModels")
+        """ Returns all of the entities in the database """
+        logger.info("Processing all entities")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a YourResourceModel by it's ID """
+        """ Finds an entity by it's ID """
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
     @classmethod
     def find_by_name(cls, name):
-        """Returns all YourResourceModels with the given name
+        """Returns all entities with the given name
 
         Args:
-            name (string): the name of the YourResourceModels you want to match
+            name (string): the name of the entity you want to match
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
@@ -125,7 +125,7 @@ class YourResourceModel():
 ######################################################################
 #  I T E M   M O D E L
 ######################################################################
-class Item(db.Model, YourResourceModel):
+class Item(db.Model, PersistentBase):
     """
     Class that represents an Item
     """
@@ -174,7 +174,7 @@ class Item(db.Model, YourResourceModel):
 ######################################################################
 #  W I S H L I S T   M O D E L
 ######################################################################
-class Wishlist(db.Model, YourResourceModel):
+class Wishlist(db.Model, PersistentBase):
     """
     Class that represents a Wishlist
     """
@@ -233,7 +233,7 @@ class Wishlist(db.Model, YourResourceModel):
 ######################################################################
 #  U S E R   M O D E L
 ######################################################################
-class User(db.Model, YourResourceModel):
+class User(db.Model, PersistentBase):
     """
     Class that represents a User
     """

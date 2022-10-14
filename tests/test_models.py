@@ -7,7 +7,7 @@ import os
 import logging
 from unicodedata import category, name
 import unittest
-from service.models import YourResourceModel, User, Wishlist, Item, DataValidationError, db
+from service.models import PersistentBase, User, Wishlist, Item, DataValidationError, db
 from tests.factories import ItemFactory, UserFactory
 
 ######################################################################
