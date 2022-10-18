@@ -8,7 +8,6 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 from service import app
 from service.models import db, init_db, Wishlist
 from service.common import status  # HTTP Status Codes
@@ -19,9 +18,12 @@ DATABASE_URI = os.getenv(
 )
 
 BASE_URL = "/wishlists"
+
 ######################################################################
 #  T E S T   C A S E S
 ######################################################################
+
+
 class TestWishlistService(TestCase):
     """ REST API Server Tests """
 
@@ -42,14 +44,12 @@ class TestWishlistService(TestCase):
         """ This runs before each test """
         db.session.query(Wishlist).delete()  # clean up the last tests
         db.session.commit()
-        
         self.client = app.test_client()
 
     def tearDown(self):
         """ This runs after each test """
         db.session.remove()
 
-    
     ######################################################################
     #  H E L P E R   M E T H O D S
     ######################################################################
@@ -70,7 +70,6 @@ class TestWishlistService(TestCase):
             wishlists.append(wishlist)
         return wishlists
 
-
     ######################################################################
     #  WISHLIST TEST CASES
     ######################################################################
@@ -87,7 +86,7 @@ class TestWishlistService(TestCase):
             BASE_URL, json=wishlist.serialize(), content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        
+
         # Check the data is correct
         new_wishlist = resp.get_json()
         self.assertEqual(
@@ -109,13 +108,6 @@ class TestWishlistService(TestCase):
             str(wishlist.lastUpdated),
             "lastUpdated does not match",
         )
-    
-
-        # # Check that the location header was correct by getting it
-        # FIXME: location header not implemented as get_wishlist is not implemented
-        # Make sure location header is set
-        # location = resp.headers.get("Location", None)
-        # self.assertIsNotNone(location)
 
         # resp = self.client.get(location, content_type="application/json")
         # self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -193,6 +185,7 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
     
+
     def test_update_item(self):
         """It should Update an item on an wishlist"""
         # create a known address

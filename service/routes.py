@@ -4,9 +4,9 @@ My Service
 Describe what your service does here
 """
 
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, make_response, abort
 from service.common import status  # HTTP Status Codes
-from service.models import PersistentBase, Wishlist, Item
+from service.models import Wishlist, Item
 
 # Import Flask application
 from . import app
@@ -144,7 +144,6 @@ def update_items(wishlist_id, item_id):
     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
 
-
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
@@ -152,6 +151,7 @@ def update_items(wishlist_id, item_id):
 
 def check_content_type(media_type):
     """Checks that the media type is correct"""
+
     content_type = request.headers.get("Content-Type")
     if content_type and content_type == media_type:
         return
