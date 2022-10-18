@@ -15,10 +15,10 @@ DATABASE_URI = os.getenv(
 )
 
 ######################################################################
-#  YourResourceModel   M O D E L   T E S T   C A S E S
+#  W I S H L I S T   M O D E L   T E S T   C A S E S
 ######################################################################
-class TestYourResourceModel(unittest.TestCase):
-    """ Test Cases for YourResourceModel Model """
+class WishlistModel(unittest.TestCase):
+    """ Test Cases for Wishlist Model """
 
     @classmethod
     def setUpClass(cls):

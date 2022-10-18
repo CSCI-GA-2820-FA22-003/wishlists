@@ -109,6 +109,41 @@ class TestWishlistService(TestCase):
             "lastUpdated does not match",
         )
 
+        # resp = self.client.get(location, content_type="application/json")
+        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # new_account = resp.get_json()
+        # self.assertEqual(new_account["name"],
+        #                  account.name, "Names does not match")
+        # self.assertEqual(
+        #     new_account["addresses"], account.addresses, "Address does not match"
+        # )
+        # self.assertEqual(new_account["email"],
+        #                  account.email, "Email does not match")
+        # self.assertEqual(
+        #     new_account["phone_number"], account.phone_number, "Phone does not match"
+        # )
+        # self.assertEqual(
+        #     new_account["date_joined"],
+        #     str(account.date_joined),
+        #     "Date Joined does not match",
+        # )
+    
+    def test_get_wishlist(self):
+        """It should Read a single Wishlist"""
+        # get the id of an wishlist
+        wishlist = self._create_wishlists(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist.id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["name"], wishlist.name)
+
+    def test_get_wishlist_not_found(self):
+        """It should not Read an Wishlist that is not found"""
+        resp = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     ######################################################################
     #  ITEM TEST CASES
     ######################################################################
@@ -141,6 +176,15 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_unsupported_media_type(self):
+        """It should not Create when sending wrong media type"""
+        wishlist = WishlistFactory()
+        resp = self.client.post(
+            BASE_URL, json=wishlist.serialize(), content_type="test/html"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+    
 
     def test_update_item(self):
         """It should Update an item on an wishlist"""
