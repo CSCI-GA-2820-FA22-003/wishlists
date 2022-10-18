@@ -142,6 +142,28 @@ class WishlistModel(unittest.TestCase):
         wishlists = Wishlist.all()
         self.assertEqual(len(wishlists), 5)
 
+    def test_repr_wishlists(self):
+        """It should Print the wishlist details"""
+        fake_wishlist = WishlistFactory()
+
+        # pylint: disable=unexpected-keyword-arg
+        wishlist = Wishlist(
+            id = fake_wishlist.id,
+            user_id = fake_wishlist.user_id,
+            name = fake_wishlist.name,
+            created_at = fake_wishlist.created_at,
+            last_updated = fake_wishlist.last_updated
+        )
+
+        self.assertIsNotNone(wishlist)
+        self.assertEqual(wishlist.id, fake_wishlist.id)
+        self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
+        self.assertEqual(wishlist.name, fake_wishlist.name)
+        self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
+        self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
+        wishlist_details = fake_wishlist.__repr__()
+        self.assertEqual(wishlist_details, f"<Wishlist {fake_wishlist.name} id=[{fake_wishlist.id}]>")
+
     def test_find_by_name(self):
         """It should Find a Wishlist by name"""
         wishlist = WishlistFactory()
@@ -282,3 +304,22 @@ class WishlistModel(unittest.TestCase):
         # Fetch it back again
         wishlist = Wishlist.find(wishlist.id)
         self.assertEqual(len(wishlist.items), 0)
+    
+    def test_repr_items(self):
+        """It should print the Item details"""
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+        wishlist = WishlistFactory()
+        item = ItemFactory(wishlist=wishlist)
+        wishlist.items.append(item)
+        wishlist.create()
+
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(wishlist.id)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+
+        new_wishlist = Wishlist.find(wishlist.id)
+        self.assertEqual(new_wishlist.items[0].name, item.name)
+        item1_details = item.__repr__()
+        self.assertEqual(item1_details, f"<Item {item.name} id=[{item.id}] Wishlist[{item.wishlist_id}]>")

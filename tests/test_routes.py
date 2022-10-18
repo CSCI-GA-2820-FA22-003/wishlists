@@ -252,3 +252,39 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_item(self):
+        """It should Read an Item from a Wishlist"""
+        # create a known item
+        wishlist = self._create_wishlists(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{wishlist.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # retrieve it back
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist.id}/items/{item_id}",
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        data = resp.get_json()
+        logging.debug(data)
+        self.assertEqual(data["wishlist_id"], wishlist.id)
+        self.assertEqual(data["name"], item.name)
+        self.assertEqual(data["category"], item.category)
+        self.assertEqual(data["price"], item.price)
+        self.assertEqual(data["description"], item.description)
+    
+    def test_get_item_not_found(self):
+        """It should not Read an Item that is not found"""
+        resp = self.client.get(f"{BASE_URL}/0/items/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

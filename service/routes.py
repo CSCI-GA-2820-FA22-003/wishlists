@@ -52,14 +52,14 @@ def create_wishlists():
     )
 
 ######################################################################
-# RETRIEVE A WISHLIST
+# READ A WISHLIST
 ######################################################################
 
 
 @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 def get_wishlists(wishlist_id):
     """
-    Retrieve a single Wishlist
+    Read a single Wishlist
 
     This endpoint will return an Wishlist based on it's id
     """
@@ -74,6 +74,25 @@ def get_wishlists(wishlist_id):
         )
 
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+
+# DELETE A WISHLIST
+######################################################################
+
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+
+    # Retrieve the wishlist to delete and delete it if it exists
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
 
 ######################################################################
 #  ADD AN ITEM TO A WISHLIST
@@ -112,25 +131,28 @@ def create_items(wishlist_id):
     return make_response(jsonify(message), status.HTTP_201_CREATED)
 
 ######################################################################
-# DELETE AN ACCOUNT
+# READ AN ITEM FROM WISHLIST
 ######################################################################
-
-
-@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
-def delete_accounts(wishlist_id):
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
+def get_items(wishlist_id, item_id):
     """
-    Delete a Wishlist
-    This endpoint will delete a Wishlist based the id specified in the path
+    Get an Item
+
+    This endpoint returns just an Item
     """
-    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+    app.logger.info(
+        "Request to retrieve Item %s for Wishlist id: %s", (item_id, wishlist_id)
+    )
 
-    # Retrieve the account to delete and delete it if it exists
-    wishlist = Wishlist.find(wishlist_id)
-    if wishlist:
-        wishlist.delete()
+    # See if the item exists and abort if it doesn't
+    item = Item.find(item_id)
+    if not item:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id '{item_id}' could not be found.",
+        )
 
-    return make_response("", status.HTTP_204_NO_CONTENT)
-
+    return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # UPDATE AN ITEM
@@ -147,7 +169,7 @@ def update_items(wishlist_id, item_id):
     )
     check_content_type("application/json")
 
-    # See if the address exists and abort if it doesn't
+    # See if the item exists and abort if it doesn't
     item = Item.find(item_id)
     if not item:
         abort(
