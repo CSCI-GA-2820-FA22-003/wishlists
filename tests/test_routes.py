@@ -109,25 +109,32 @@ class TestWishlistService(TestCase):
             "lastUpdated does not match",
         )
 
-        # resp = self.client.get(location, content_type="application/json")
-        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        # new_account = resp.get_json()
-        # self.assertEqual(new_account["name"],
-        #                  account.name, "Names does not match")
-        # self.assertEqual(
-        #     new_account["addresses"], account.addresses, "Address does not match"
-        # )
-        # self.assertEqual(new_account["email"],
-        #                  account.email, "Email does not match")
-        # self.assertEqual(
-        #     new_account["phone_number"], account.phone_number, "Phone does not match"
-        # )
-        # self.assertEqual(
-        #     new_account["date_joined"],
-        #     str(account.date_joined),
-        #     "Date Joined does not match",
-        # )
-    
+        # Make sure location header is set
+        location = resp.headers.get("Location", None)
+        self.assertIsNotNone(location)
+
+        # Check that the location header was correct by getting it
+        resp = self.client.get(location, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_wishlist = resp.get_json()
+        self.assertEqual(new_wishlist["name"], wishlist.name, "Names does not match")
+        self.assertEqual(
+            new_wishlist["user_id"], wishlist.user_id, "User ID does not match"
+        )
+        self.assertEqual(
+            new_wishlist["items"], wishlist.items, "Item does not match"
+        )
+        self.assertEqual(
+            new_wishlist["createdAt"],
+            str(wishlist.createdAt),
+            "createdAt does not match",
+        )
+        self.assertEqual(
+            new_wishlist["lastUpdated"],
+            str(wishlist.lastUpdated),
+            "lastUpdated does not match",
+        )
+
     def test_get_wishlist(self):
         """It should Read a single Wishlist"""
         # get the id of an wishlist
@@ -176,7 +183,7 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_unsupported_media_type(self):
         """It should not Create when sending wrong media type"""
         wishlist = WishlistFactory()
@@ -184,7 +191,6 @@ class TestWishlistService(TestCase):
             BASE_URL, json=wishlist.serialize(), content_type="test/html"
         )
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
-    
 
     def test_update_item(self):
         """It should Update an item on an wishlist"""

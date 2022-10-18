@@ -250,7 +250,6 @@ class WishlistModel(unittest.TestCase):
         # Fetch it back
         wishlist = Wishlist.find(wishlist.id)
         old_item = wishlist.items[0]
-        print("%r", old_item)
         self.assertEqual(old_item.name, item.name)
         # Change the name
         old_item.name = "New name"
