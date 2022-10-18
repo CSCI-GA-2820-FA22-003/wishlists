@@ -7,6 +7,7 @@ Test cases can be run with the following:
 """
 import os
 import logging
+import random
 from unittest import TestCase
 from service import app
 from service.models import db, init_db, Wishlist
@@ -54,11 +55,11 @@ class TestWishlistService(TestCase):
     #  H E L P E R   M E T H O D S
     ######################################################################
 
-    def _create_wishlists(self, count):
+    def _create_wishlists(self, count, **kwargs):
         """Factory method to create wishlists in bulk"""
         wishlists = []
         for _ in range(count):
-            wishlist = WishlistFactory()
+            wishlist = WishlistFactory(**kwargs)
             resp = self.client.post(BASE_URL, json=wishlist.serialize())
             self.assertEqual(
                 resp.status_code,
@@ -162,6 +163,109 @@ class TestWishlistService(TestCase):
         """It should not Create when sending the wrong data"""
         resp = self.client.post(BASE_URL, json={"name": "not enough data"})
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_list_all_wishlists_empty(self):
+        """It should return empty list of wishlists"""
+        resp = self.client.get(
+            f"{BASE_URL}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
+    def test_list_all_wishlists(self):
+        """It should list all wishlists"""
+        random_count = random.randint(1,10)
+        wishlists = self._create_wishlists(random_count)
+        resp = self.client.get(
+            f"{BASE_URL}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(wishlists))
+        for idx, new_wishlist in enumerate(data):
+            self.assertEqual(
+                new_wishlist["name"], wishlists[idx].name, "Names does not match"
+            )
+            self.assertEqual(
+                new_wishlist["user_id"], wishlists[idx].user_id, "User ID does not match"
+            )
+            self.assertEqual(
+                new_wishlist["items"], wishlists[idx].items, "Item does not match"
+            )
+            self.assertEqual(
+                new_wishlist["created_at"],
+                str(wishlists[idx].created_at),
+                "created_at does not match",
+            )
+            self.assertEqual(
+                new_wishlist["last_updated"],
+                str(wishlists[idx].last_updated),
+                "last_updated does not match",
+            )
+
+    def test_list_all_wishlists_by_user_id(self):
+        """It should list all of a users wishlists"""
+        random_count = random.randint(1,10)
+        random_user_id = random.randint(1000,3000)
+        wishlists = self._create_wishlists(random_count, user_id = random_user_id)
+        resp = self.client.get(
+            f"{BASE_URL}?user_id={random_user_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(wishlists))
+        for idx, new_wishlist in enumerate(data):
+            self.assertEqual(
+                new_wishlist["name"], wishlists[idx].name, "Names does not match"
+            )
+            self.assertEqual(
+                new_wishlist["user_id"], wishlists[idx].user_id, "User ID does not match"
+            )
+            self.assertEqual(
+                new_wishlist["items"], wishlists[idx].items, "Item does not match"
+            )
+            self.assertEqual(
+                new_wishlist["created_at"],
+                str(wishlists[idx].created_at),
+                "created_at does not match",
+            )
+            self.assertEqual(
+                new_wishlist["last_updated"],
+                str(wishlists[idx].last_updated),
+                "last_updated does not match",
+            )
+    def test_list_all_wishlists_by_name(self):
+        """It should list all wishlists with given name"""
+        random_count = random.randint(5,10)
+        random_name = "r@ndom_name"
+        wishlists = self._create_wishlists(random_count, name = random_name)
+        resp = self.client.get(
+            f"{BASE_URL}?name={random_name}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(wishlists))
+        for idx, new_wishlist in enumerate(data):
+            self.assertEqual(
+                new_wishlist["name"], wishlists[idx].name, "Names does not match"
+            )
+            self.assertEqual(
+                new_wishlist["user_id"], wishlists[idx].user_id, "User ID does not match"
+            )
+            self.assertEqual(
+                new_wishlist["items"], wishlists[idx].items, "Item does not match"
+            )
+            self.assertEqual(
+                new_wishlist["created_at"],
+                str(wishlists[idx].created_at),
+                "created_at does not match",
+            )
+            self.assertEqual(
+                new_wishlist["last_updated"],
+                str(wishlists[idx].last_updated),
+                "last_updated does not match",
+            )
 
     ######################################################################
     #  ITEM TEST CASES
