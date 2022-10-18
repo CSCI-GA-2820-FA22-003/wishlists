@@ -1,8 +1,8 @@
 # import datetime
-from datetime import date
+from datetime import datetime, timezone
 import factory
 import random
-from factory.fuzzy import FuzzyChoice, FuzzyDate
+from factory.fuzzy import FuzzyChoice, FuzzyDateTime
 from service.models import Wishlist, Item
 
 
@@ -17,8 +17,8 @@ class WishlistFactory(factory.Factory):
     id = factory.Sequence(lambda n: n)
     user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
-    createdAt = FuzzyDate(date(2008, 1, 1))
-    lastUpdated = FuzzyDate(date(2008, 1, 1))
+    createdAt = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
+    lastUpdated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
         
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
