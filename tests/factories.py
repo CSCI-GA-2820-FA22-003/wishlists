@@ -38,8 +38,9 @@ class ItemFactory(factory.Factory):
         model = Item
 
     id = factory.Sequence(lambda n: n)
-    wishlist_id = factory.SubFactory(WishlistFactory)
+    wishlist_id = None
     name = FuzzyChoice(choices=["grocery item", "electronic item", "home-care product", "miscellaneous"])
     category = FuzzyChoice(choices=["food", "recreation", "other"])
     price = random.uniform(10, 1000)
-    description = factory.Faker("text")
+    description = "Some description for item # "+str(id)
+    wishlist = factory.SubFactory(WishlistFactory)    
