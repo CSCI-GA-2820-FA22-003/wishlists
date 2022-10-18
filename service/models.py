@@ -3,13 +3,9 @@ Models for YourResourceModel
 
 All of the models are stored in this module
 """
-from cgi import print_exception
-from ctypes import addressof
 import logging
-from ssl import create_default_context
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
-from datetime import datetime
 
 logger = logging.getLogger("flask.app")
 
@@ -21,7 +17,7 @@ db = SQLAlchemy()
 def init_db(app):
     """ Initializes the SQLAlchemy app """
     Item.init_db(app)
-    Wishlist.init_db(app)    
+    Wishlist.init_db(app)
 
 
 class DataValidationError(Exception):
@@ -38,7 +34,6 @@ class PersistentBase():
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
-
 
     def create(self):
         """
@@ -107,13 +102,18 @@ class PersistentBase():
 ######################################################################
 #  I T E M   M O D E L
 ######################################################################
+
+
 class Item(db.Model, PersistentBase):
     """
     Class that represents an Item
     """
 
     id = db.Column(db.Integer, primary_key=True)
-    wishlist_id = db.Column(db.Integer, db.ForeignKey("wishlist.id", ondelete="CASCADE"), nullable=False)
+    wishlist_id = db.Column(
+        db.Integer,
+        db.ForeignKey("wishlist.id", ondelete="CASCADE"),
+        nullable=False)
     name = db.Column(db.String(64))
     category = db.Column(db.String(64))
     price = db.Column(db.Float)
@@ -130,7 +130,7 @@ class Item(db.Model, PersistentBase):
             "name": self.name,
             "category": self.category,
             "price": self.price,
-            "description": self.description,            
+            "description": self.description,
         }
 
     def deserialize(self, data):
@@ -164,12 +164,12 @@ class Wishlist(db.Model, PersistentBase):
     Class that represents a Wishlist
     """
 
-    id = db.Column(db.Integer, primary_key=True)    
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     last_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
-    items = db.relationship("Item", backref="wishlist", passive_deletes=True)    
+    items = db.relationship("Item", backref="wishlist", passive_deletes=True)
 
     def __repr__(self):
         return f"<Wishlist {self.name} id=[{self.id}]>"
@@ -187,7 +187,6 @@ class Wishlist(db.Model, PersistentBase):
         for item in self.items:
             wishlist["items"].append(item.serialize())
         return wishlist
-
 
     def deserialize(self, data):
         """
@@ -208,7 +207,6 @@ class Wishlist(db.Model, PersistentBase):
                 item.deserialize(json_item)
                 self.items.append(item)
 
-            
         except KeyError as error:
             raise DataValidationError("Invalid Wishlist: missing " + error.args[0]) from error
         except TypeError as error:
@@ -252,10 +250,10 @@ class Wishlist(db.Model, PersistentBase):
 #             data (dict): A dictionary containing the resource data
 #         """
 #         try:
-#             self.id = data["id"]            
+#             self.id = data["id"]
 #             self.name = data["name"]
 #             self.age = data["age"]
-#             self.address = data["address"]            
+#             self.address = data["address"]
 #             # handle inner list of items
 #             wishlists_list = data.get("wishlists")
 #             for json_wishlist in wishlists_list:

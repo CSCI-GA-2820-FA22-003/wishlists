@@ -25,6 +25,7 @@ BASE_URL = "/wishlists"
 ######################################################################
 
 
+# pylint: disable=too-many-public-methods
 class TestWishlistService(TestCase):
     """ REST API Server Tests """
 
@@ -175,7 +176,7 @@ class TestWishlistService(TestCase):
 
     def test_list_all_wishlists(self):
         """It should list all wishlists"""
-        random_count = random.randint(1,10)
+        random_count = random.randint(1, 10)
         wishlists = self._create_wishlists(random_count)
         resp = self.client.get(
             f"{BASE_URL}", content_type="application/json"
@@ -206,9 +207,9 @@ class TestWishlistService(TestCase):
 
     def test_list_all_wishlists_by_user_id(self):
         """It should list all of a users wishlists"""
-        random_count = random.randint(1,10)
-        random_user_id = random.randint(1000,3000)
-        wishlists = self._create_wishlists(random_count, user_id = random_user_id)
+        random_count = random.randint(1, 10)
+        random_user_id = random.randint(1000, 3000)
+        wishlists = self._create_wishlists(random_count, user_id=random_user_id)
         resp = self.client.get(
             f"{BASE_URL}?user_id={random_user_id}", content_type="application/json"
         )
@@ -235,11 +236,12 @@ class TestWishlistService(TestCase):
                 str(wishlists[idx].last_updated),
                 "last_updated does not match",
             )
+
     def test_list_all_wishlists_by_name(self):
         """It should list all wishlists with given name"""
-        random_count = random.randint(5,10)
+        random_count = random.randint(5, 10)
         random_name = "r@ndom_name"
-        wishlists = self._create_wishlists(random_count, name = random_name)
+        wishlists = self._create_wishlists(random_count, name=random_name)
         resp = self.client.get(
             f"{BASE_URL}?name={random_name}", content_type="application/json"
         )
@@ -387,7 +389,7 @@ class TestWishlistService(TestCase):
         self.assertEqual(data["category"], item.category)
         self.assertEqual(data["price"], item.price)
         self.assertEqual(data["description"], item.description)
-    
+
     def test_get_item_not_found(self):
         """It should not Read an Item that is not found"""
         resp = self.client.get(f"{BASE_URL}/0/items/0")

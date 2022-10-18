@@ -1,7 +1,9 @@
-# import datetime
+"""
+Python library for creating wishlists and items for tests
+"""
 from datetime import datetime, timezone
-import factory
 import random
+import factory
 from factory.fuzzy import FuzzyChoice, FuzzyDateTime
 from service.models import Wishlist, Item
 
@@ -19,7 +21,7 @@ class WishlistFactory(factory.Factory):
     name = 'Wishlist #'+str(random.randint(1, 100))
     created_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
     last_updated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
-        
+
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
         """Creates the items list"""
@@ -28,6 +30,7 @@ class WishlistFactory(factory.Factory):
 
         if extracted:
             self.items = extracted
+
 
 class ItemFactory(factory.Factory):
     """Creates fake Items"""
@@ -39,8 +42,10 @@ class ItemFactory(factory.Factory):
 
     id = factory.Sequence(lambda n: n)
     wishlist_id = None
-    name = FuzzyChoice(choices=["grocery item", "electronic item", "home-care product", "miscellaneous"])
+    name = FuzzyChoice(
+        choices=["grocery item", "electronic item", "home-care product", "miscellaneous"]
+        )
     category = FuzzyChoice(choices=["food", "recreation", "other"])
     price = random.uniform(10, 1000)
     description = "Some description for item # "+str(id)
-    wishlist = factory.SubFactory(WishlistFactory)    
+    wishlist = factory.SubFactory(WishlistFactory)

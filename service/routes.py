@@ -106,6 +106,7 @@ def get_wishlist(wishlist_id):
 # DELETE A WISHLIST
 ######################################################################
 
+
 @app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
 def delete_wishlists(wishlist_id):
     """
@@ -161,6 +162,8 @@ def create_items(wishlist_id):
 ######################################################################
 # READ AN ITEM FROM WISHLIST
 ######################################################################
+
+
 @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
 def get_items(wishlist_id, item_id):
     """
@@ -185,6 +188,7 @@ def get_items(wishlist_id, item_id):
 ######################################################################
 # UPDATE AN ITEM
 ######################################################################
+
 
 @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(wishlist_id, item_id):
