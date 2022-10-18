@@ -61,16 +61,16 @@ class WishlistModel(unittest.TestCase):
             id = fake_wishlist.id,
             user_id = fake_wishlist.user_id,
             name = fake_wishlist.name,
-            createdAt = fake_wishlist.createdAt,
-            lastUpdated = fake_wishlist.lastUpdated
+            created_at = fake_wishlist.created_at,
+            last_updated = fake_wishlist.last_updated
         )
 
         self.assertIsNotNone(wishlist)
         self.assertEqual(wishlist.id, fake_wishlist.id)
         self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
         self.assertEqual(wishlist.name, fake_wishlist.name)
-        self.assertEqual(wishlist.createdAt, fake_wishlist.createdAt)
-        self.assertEqual(wishlist.lastUpdated, fake_wishlist.lastUpdated)
+        self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
+        self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
 
     def test_add_a_wishlist(self):
         """It should Create a Wishlist and add it to the database"""
@@ -94,8 +94,8 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(found_wishlist.id, wishlist.id)
         self.assertEqual(found_wishlist.user_id, wishlist.user_id)
         self.assertEqual(found_wishlist.name, wishlist.name)
-        self.assertEqual(found_wishlist.createdAt, wishlist.createdAt)
-        self.assertEqual(found_wishlist.lastUpdated, wishlist.lastUpdated)
+        self.assertEqual(found_wishlist.created_at, wishlist.created_at)
+        self.assertEqual(found_wishlist.last_updated, wishlist.last_updated)
         self.assertEqual(found_wishlist.items, [])
 
     def test_update_a_wishlist(self):
@@ -142,6 +142,28 @@ class WishlistModel(unittest.TestCase):
         wishlists = Wishlist.all()
         self.assertEqual(len(wishlists), 5)
 
+    def test_repr_wishlists(self):
+        """It should Print the wishlist details"""
+        fake_wishlist = WishlistFactory()
+
+        # pylint: disable=unexpected-keyword-arg
+        wishlist = Wishlist(
+            id = fake_wishlist.id,
+            user_id = fake_wishlist.user_id,
+            name = fake_wishlist.name,
+            created_at = fake_wishlist.created_at,
+            last_updated = fake_wishlist.last_updated
+        )
+
+        self.assertIsNotNone(wishlist)
+        self.assertEqual(wishlist.id, fake_wishlist.id)
+        self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
+        self.assertEqual(wishlist.name, fake_wishlist.name)
+        self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
+        self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
+        wishlist_details = fake_wishlist.__repr__()
+        self.assertEqual(wishlist_details, f"<Wishlist {fake_wishlist.name} id=[{fake_wishlist.id}]>")
+
     def test_find_by_name(self):
         """It should Find a Wishlist by name"""
         wishlist = WishlistFactory()
@@ -162,8 +184,8 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(serial_wishlist["id"], wishlist.id)
         self.assertEqual(serial_wishlist["user_id"], wishlist.user_id)
         self.assertEqual(serial_wishlist["name"], wishlist.name)
-        self.assertEqual(serial_wishlist["createdAt"], str(wishlist.createdAt))
-        self.assertEqual(serial_wishlist["lastUpdated"], str(wishlist.lastUpdated))        
+        self.assertEqual(serial_wishlist["created_at"], str(wishlist.created_at))
+        self.assertEqual(serial_wishlist["last_updated"], str(wishlist.last_updated))        
         self.assertEqual(len(serial_wishlist["items"]), 1)
 
         items = serial_wishlist["items"]
@@ -186,8 +208,8 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(new_wishlist.id, wishlist.id)
         self.assertEqual(new_wishlist.user_id, wishlist.user_id)
         self.assertEqual(new_wishlist.name, wishlist.name)
-        self.assertEqual(new_wishlist.createdAt, str(wishlist.createdAt))
-        self.assertEqual(new_wishlist.lastUpdated, str(wishlist.lastUpdated))
+        self.assertEqual(new_wishlist.created_at, str(wishlist.created_at))
+        self.assertEqual(new_wishlist.last_updated, str(wishlist.last_updated))
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize a Wishlist with a KeyError"""
@@ -250,7 +272,6 @@ class WishlistModel(unittest.TestCase):
         # Fetch it back
         wishlist = Wishlist.find(wishlist.id)
         old_item = wishlist.items[0]
-        print("%r", old_item)
         self.assertEqual(old_item.name, item.name)
         # Change the name
         old_item.name = "New name"
@@ -283,3 +304,22 @@ class WishlistModel(unittest.TestCase):
         # Fetch it back again
         wishlist = Wishlist.find(wishlist.id)
         self.assertEqual(len(wishlist.items), 0)
+    
+    def test_repr_items(self):
+        """It should print the Item details"""
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+        wishlist = WishlistFactory()
+        item = ItemFactory(wishlist=wishlist)
+        wishlist.items.append(item)
+        wishlist.create()
+
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(wishlist.id)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+
+        new_wishlist = Wishlist.find(wishlist.id)
+        self.assertEqual(new_wishlist.items[0].name, item.name)
+        item1_details = item.__repr__()
+        self.assertEqual(item1_details, f"<Item {item.name} id=[{item.id}] Wishlist[{item.wishlist_id}]>")

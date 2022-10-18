@@ -4,7 +4,7 @@ My Service
 Describe what your service does here
 """
 
-from flask import jsonify, request, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
 
@@ -44,25 +44,22 @@ def create_wishlists():
 
     # Create a message to return
     message = wishlist.serialize()
-    # TODO: add location URL when get_wishlist is ready
-    # location_url = url_for(
-    #     "get_wishlists", account_id=wishlist.id, _external=True)
-
-    # return make_response(
-    #     jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    # )
+    location_url = url_for(
+        "get_wishlists", wishlist_id=wishlist.id, _external=True)
 
     return make_response(
-        jsonify(message), status.HTTP_201_CREATED
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
 ######################################################################
-# RETRIEVE A WISHLIST
+# READ A WISHLIST
 ######################################################################
+
+
 @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 def get_wishlists(wishlist_id):
     """
-    Retrieve a single Wishlist
+    Read a single Wishlist
 
     This endpoint will return an Wishlist based on it's id
     """
@@ -77,10 +74,31 @@ def get_wishlists(wishlist_id):
         )
 
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
-    
+
+# DELETE A WISHLIST
+######################################################################
+
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_wishlists(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+
+    # Retrieve the wishlist to delete and delete it if it exists
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+
 ######################################################################
 #  ADD AN ITEM TO A WISHLIST
 ######################################################################
+
+
 @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
 def create_items(wishlist_id):
     """
@@ -139,6 +157,7 @@ def get_items(wishlist_id, item_id):
 ######################################################################
 # UPDATE AN ITEM
 ######################################################################
+
 @app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(wishlist_id, item_id):
     """
