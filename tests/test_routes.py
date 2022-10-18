@@ -99,14 +99,14 @@ class TestWishlistService(TestCase):
             new_wishlist["items"], wishlist.items, "Item does not match"
         )
         self.assertEqual(
-            new_wishlist["createdAt"],
-            str(wishlist.createdAt),
-            "createdAt does not match",
+            new_wishlist["created_at"],
+            str(wishlist.created_at),
+            "created_at does not match",
         )
         self.assertEqual(
-            new_wishlist["lastUpdated"],
-            str(wishlist.lastUpdated),
-            "lastUpdated does not match",
+            new_wishlist["last_updated"],
+            str(wishlist.last_updated),
+            "last_updated does not match",
         )
 
         # Make sure location header is set
@@ -125,14 +125,14 @@ class TestWishlistService(TestCase):
             new_wishlist["items"], wishlist.items, "Item does not match"
         )
         self.assertEqual(
-            new_wishlist["createdAt"],
-            str(wishlist.createdAt),
-            "createdAt does not match",
+            new_wishlist["created_at"],
+            str(wishlist.created_at),
+            "created_at does not match",
         )
         self.assertEqual(
-            new_wishlist["lastUpdated"],
-            str(wishlist.lastUpdated),
-            "lastUpdated does not match",
+            new_wishlist["last_updated"],
+            str(wishlist.last_updated),
+            "last_updated does not match",
         )
 
     def test_get_wishlist(self):

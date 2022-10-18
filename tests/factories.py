@@ -17,8 +17,8 @@ class WishlistFactory(factory.Factory):
     id = factory.Sequence(lambda n: n)
     user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
-    createdAt = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
-    lastUpdated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
+    created_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
+    last_updated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
         
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument
