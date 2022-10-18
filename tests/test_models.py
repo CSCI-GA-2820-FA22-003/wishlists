@@ -162,8 +162,8 @@ class TestYourResourceModel(unittest.TestCase):
         self.assertEqual(serial_wishlist["id"], wishlist.id)
         self.assertEqual(serial_wishlist["user_id"], wishlist.user_id)
         self.assertEqual(serial_wishlist["name"], wishlist.name)
-        self.assertEqual(serial_wishlist["createdAt"], wishlist.createdAt)
-        self.assertEqual(serial_wishlist["lastUpdated"], wishlist.lastUpdated)        
+        self.assertEqual(serial_wishlist["createdAt"], str(wishlist.createdAt))
+        self.assertEqual(serial_wishlist["lastUpdated"], str(wishlist.lastUpdated))        
         self.assertEqual(len(serial_wishlist["items"]), 1)
 
         items = serial_wishlist["items"]
@@ -186,8 +186,8 @@ class TestYourResourceModel(unittest.TestCase):
         self.assertEqual(new_wishlist.id, wishlist.id)
         self.assertEqual(new_wishlist.user_id, wishlist.user_id)
         self.assertEqual(new_wishlist.name, wishlist.name)
-        self.assertEqual(new_wishlist.createdAt, wishlist.createdAt)
-        self.assertEqual(new_wishlist.lastUpdated, wishlist.lastUpdated)
+        self.assertEqual(new_wishlist.createdAt, str(wishlist.createdAt))
+        self.assertEqual(new_wishlist.lastUpdated, str(wishlist.lastUpdated))
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize a Wishlist with a KeyError"""

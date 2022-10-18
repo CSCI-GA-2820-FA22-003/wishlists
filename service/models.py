@@ -191,8 +191,8 @@ class Wishlist(db.Model, PersistentBase):
             "id": self.id,
             "user_id": self.user_id,
             "name": self.name,
-            "createdAt": self.createdAt,
-            "lastUpdated": self.lastUpdated,
+            "createdAt": str(self.createdAt),
+            "lastUpdated": str(self.lastUpdated),
             "items": [],
         }
         for item in self.items:
