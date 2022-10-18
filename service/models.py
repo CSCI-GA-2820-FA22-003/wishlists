@@ -39,8 +39,6 @@ class PersistentBase():
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
 
-    def __repr__(self):
-        return f"<PersistentBase {self.name} id=[{self.id}]>"
 
     def create(self):
         """
@@ -63,30 +61,6 @@ class PersistentBase():
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
-
-    def serialize(self):
-        """ Serializes an entity into a dictionary """
-        return {"id": self.id, "name": self.name}
-
-    def deserialize(self, data):
-        """
-        Deserializes an entity from a dictionary
-
-        Args:
-            data (dict): A dictionary containing the resource data
-        """
-        try:
-            self.name = data["name"]
-        except KeyError as error:
-            raise DataValidationError(
-                "Invalid entity: missing " + error.args[0]
-            ) from error
-        except TypeError as error:
-            raise DataValidationError(
-                "Invalid entity: body of request contained bad or no data - "
-                "Error message: " + error
-            ) from error
-        return self
 
     @classmethod
     def init_db(cls, app):
@@ -136,6 +110,9 @@ class Item(db.Model, PersistentBase):
     price = db.Column(db.Float)
     description = db.Column(db.String(100))
 
+    def __repr__(self):
+        return f"<Item {self.name} id=[{self.id}] Wishlist[{self.wishlist_id}]>"
+
     def serialize(self):
         """Serializes an Item into a dictionary"""
         return {
@@ -184,6 +161,9 @@ class Wishlist(db.Model, PersistentBase):
     createdAt = db.Column(db.DateTime(timezone=True), server_default=func.now())
     lastUpdated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
     items = db.relationship("Item", backref="wishlist", passive_deletes=True)    
+
+    def __repr__(self):
+        return f"<Wishlist {self.name} id=[{self.id}]>"
 
     def serialize(self):
         """Serializes a Wishlist into a dictionary"""
