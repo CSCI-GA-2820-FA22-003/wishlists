@@ -183,7 +183,7 @@ class Wishlist(db.Model, PersistentBase):
     name = db.Column(db.String(64))
     createdAt = db.Column(db.DateTime(timezone=True), server_default=func.now())
     lastUpdated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
-    items = db.relationship("Item", backref="item", passive_deletes=True)    
+    items = db.relationship("Item", backref="wishlist", passive_deletes=True)    
 
     def serialize(self):
         """Serializes a Wishlist into a dictionary"""
@@ -210,8 +210,8 @@ class Wishlist(db.Model, PersistentBase):
             self.id = data["id"]
             self.user_id = data["user_id"]
             self.name = data["name"]
-            self.createdAt = datetime.fromisoformat(data["createdAt"]) 
-            self.lastUpdated = datetime.fromisoformat(data["lastUpdated"]) 
+            self.createdAt = data["createdAt"]
+            self.lastUpdated = data["lastUpdated"]
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
