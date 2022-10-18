@@ -269,6 +269,56 @@ class TestWishlistService(TestCase):
                 "last_updated does not match",
             )
 
+    def test_list_all_items_in_wishlist(self):
+        """It should list all items in given wishlist"""
+        wishlist = self._create_wishlists(1)[0]
+        wishlist_id = wishlist.id
+        items = wishlist.items
+        self.assertEqual(len(items), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data['items']), 0)
+
+        random_count = random.randint(1, 10)
+        items = []
+        for _ in range(random_count):
+            item = ItemFactory(wishlist=wishlist, wishlist_id=wishlist_id)
+            resp = self.client.post(
+                f"{BASE_URL}/{wishlist_id}/items",
+                json=item.serialize(),
+                content_type="application/json"
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+            items.append(item)
+
+        self.assertEqual(len(items), random_count)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}/items", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), random_count)
+        for idx, new_item in enumerate(data):
+            self.assertEqual(items[idx].id, new_item['id'])
+            self.assertEqual(items[idx].name, new_item['name'])
+            self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
+            self.assertEqual(items[idx].category, new_item['category'])
+            self.assertEqual(items[idx].price, new_item['price'])
+            self.assertEqual(items[idx].description, new_item['description'])
+
+    def test_list_all_items_in_non_existent_wishlist(self):
+        """It should return error 404"""
+        random_id = random.randint(1, 100)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{random_id}/items", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     ######################################################################
     #  ITEM TEST CASES
     ######################################################################

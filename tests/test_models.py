@@ -283,6 +283,22 @@ class WishlistModel(unittest.TestCase):
         item = wishlist.items[0]
         self.assertEqual(item.name, "New name")
 
+    def test_list_items_in_wishlist(self):
+        """It should list all items in a Wishlist"""
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+
+        wishlist = WishlistFactory()
+        wishlist.create()
+        self.assertIsNotNone(wishlist.id)
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), 1)
+        self.assertEqual(len(wishlist.items), 0)
+
+        random_count = random.randint(1, 50)
+        ItemFactory.create_batch(size=random_count, wishlist=wishlist)
+        self.assertEqual(len(wishlist.items), random_count)
+
     def test_delete_wishlist_item(self):
         """It should Delete a Wishlist Item"""
         wishlists = Wishlist.all()
