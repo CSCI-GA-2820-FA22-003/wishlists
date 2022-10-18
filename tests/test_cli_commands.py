@@ -8,6 +8,7 @@ from service.common.cli_commands import db_create
 from service import app
 from service.models import db
 
+
 class TestFlaskCLI(TestCase):
     """Test Flask CLI Commands"""
 

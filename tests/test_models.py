@@ -2,14 +2,13 @@
 Test cases for YourResourceModel Model
 
 """
-from audioop import add
 import os
 import logging
 import unittest
-from service import app
-from service.models import PersistentBase, Wishlist, Item, DataValidationError, db
-from tests.factories import ItemFactory, WishlistFactory
 import random
+from service import app
+from service.models import Wishlist, Item, DataValidationError, db
+from tests.factories import ItemFactory, WishlistFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -18,6 +17,9 @@ DATABASE_URI = os.getenv(
 ######################################################################
 #  W I S H L I S T   M O D E L   T E S T   C A S E S
 ######################################################################
+
+
+# pylint: disable=too-many-public-methods
 class WishlistModel(unittest.TestCase):
     """ Test Cases for Wishlist Model """
 
@@ -48,10 +50,6 @@ class WishlistModel(unittest.TestCase):
     #  T E S T   C A S E S
     ######################################################################
 
-    def test_example_replace_this(self):
-        """ It should always be true """
-        self.assertTrue(True)
-
     def test_create_a_wishlist(self):
         """It should Create a Wishlist and assert that it exists"""
         # pylint: disable=unexpected-keyword-arg
@@ -59,11 +57,11 @@ class WishlistModel(unittest.TestCase):
 
         # pylint: disable=unexpected-keyword-arg
         wishlist = Wishlist(
-            id = fake_wishlist.id,
-            user_id = fake_wishlist.user_id,
-            name = fake_wishlist.name,
-            created_at = fake_wishlist.created_at,
-            last_updated = fake_wishlist.last_updated
+            id=fake_wishlist.id,
+            user_id=fake_wishlist.user_id,
+            name=fake_wishlist.name,
+            created_at=fake_wishlist.created_at,
+            last_updated=fake_wishlist.last_updated
         )
 
         self.assertIsNotNone(wishlist)
@@ -149,11 +147,11 @@ class WishlistModel(unittest.TestCase):
 
         # pylint: disable=unexpected-keyword-arg
         wishlist = Wishlist(
-            id = fake_wishlist.id,
-            user_id = fake_wishlist.user_id,
-            name = fake_wishlist.name,
-            created_at = fake_wishlist.created_at,
-            last_updated = fake_wishlist.last_updated
+            id=fake_wishlist.id,
+            user_id=fake_wishlist.user_id,
+            name=fake_wishlist.name,
+            created_at=fake_wishlist.created_at,
+            last_updated=fake_wishlist.last_updated
         )
 
         self.assertIsNotNone(wishlist)
@@ -162,8 +160,10 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(wishlist.name, fake_wishlist.name)
         self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
         self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
-        wishlist_details = fake_wishlist.__repr__()
-        self.assertEqual(wishlist_details, f"<Wishlist {fake_wishlist.name} id=[{fake_wishlist.id}]>")
+        wishlist_details = repr(fake_wishlist)
+        self.assertEqual(
+            wishlist_details,
+            f"<Wishlist {fake_wishlist.name} id=[{fake_wishlist.id}]>")
 
     def test_find_by_name(self):
         """It should Find a Wishlist by name"""
@@ -186,7 +186,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(serial_wishlist["user_id"], wishlist.user_id)
         self.assertEqual(serial_wishlist["name"], wishlist.name)
         self.assertEqual(serial_wishlist["created_at"], str(wishlist.created_at))
-        self.assertEqual(serial_wishlist["last_updated"], str(wishlist.last_updated))        
+        self.assertEqual(serial_wishlist["last_updated"], str(wishlist.last_updated))
         self.assertEqual(len(serial_wishlist["items"]), 1)
 
         items = serial_wishlist["items"]
@@ -312,8 +312,8 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(wishlists, [])
 
         random_count = random.randint(1, 10)
-        user_id = random.randint(2000,3000)
-        for wishlist in WishlistFactory.create_batch(random_count, user_id = user_id):
+        user_id = random.randint(2000, 3000)
+        for wishlist in WishlistFactory.create_batch(random_count, user_id=user_id):
             wishlist.create()
         # Assert that there are as many wishlists as we created in the database
         wishlists = Wishlist.all()
@@ -324,7 +324,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(wishlists.count(), random_count)
         for wishlist_iter in wishlists:
             self.assertEqual(wishlist_iter.user_id, user_id)
-    
+
     def test_repr_items(self):
         """It should print the Item details"""
         wishlists = Wishlist.all()
@@ -341,5 +341,7 @@ class WishlistModel(unittest.TestCase):
 
         new_wishlist = Wishlist.find(wishlist.id)
         self.assertEqual(new_wishlist.items[0].name, item.name)
-        item1_details = item.__repr__()
-        self.assertEqual(item1_details, f"<Item {item.name} id=[{item.id}] Wishlist[{item.wishlist_id}]>")
+        item1_details = repr(item)
+        self.assertEqual(
+            item1_details,
+            f"<Item {item.name} id=[{item.id}] Wishlist[{item.wishlist_id}]>")
