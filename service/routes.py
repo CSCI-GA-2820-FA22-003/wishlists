@@ -76,7 +76,7 @@ def get_wishlists():
         wishlists = Wishlist.all()
 
     result = [wishlist.serialize() for wishlist in wishlists]
-
+    result = sorted(result, key=lambda wishlist: wishlist['id'])
     return make_response(jsonify(result), status.HTTP_200_OK)
 
 ######################################################################
@@ -103,6 +103,7 @@ def get_wishlist(wishlist_id):
 
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
+######################################################################
 # DELETE A WISHLIST
 ######################################################################
 
@@ -215,6 +216,34 @@ def update_items(wishlist_id, item_id):
     item.update()
 
     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
+
+######################################################################
+# LIST ALL ITEMS IN WISHLIST
+######################################################################
+
+
+@app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
+def list_items(wishlist_id):
+    """
+    List all items
+    This endpoint will list all items in the wishlist
+    """
+    app.logger.info(
+        "Request to list Items for wishlist id: %s", (wishlist_id)
+    )
+
+    # See if the wishlist exists and abort if it doesn't
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Wishlist with id '{wishlist_id}' could not be found.",
+        )
+
+    # Update from the json in the body of the request
+    result = [item.serialize() for item in wishlist.items]
+    result = sorted(result, key=lambda item: item['id'])   
+    return make_response(jsonify(result), status.HTTP_200_OK)
 
 
 ######################################################################
