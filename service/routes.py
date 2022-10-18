@@ -45,11 +45,39 @@ def create_wishlists():
     # Create a message to return
     message = wishlist.serialize()
     location_url = url_for(
-        "get_wishlists", wishlist_id=wishlist.id, _external=True)
+        "get_wishlist", wishlist_id=wishlist.id, _external=True)
 
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
+
+######################################################################
+# LIST ALL WISHLISTS
+######################################################################
+
+
+@app.route("/wishlists", methods=["GET"])
+def get_wishlists():
+    """
+    List all Wishlists
+
+    This endpoint will return all wishlists belonging to current user
+    """
+    wishlists = []
+    user_id = request.args.get("user_id")
+    name = request.args.get("name")
+    app.logger.info("Request for all Wishlists")
+
+    if user_id:
+        wishlists = Wishlist.find_by_user_id(user_id)
+    elif name:
+        wishlists = Wishlist.find_by_name(name)
+    else:
+        wishlists = Wishlist.all()
+
+    result = [wishlist.serialize() for wishlist in wishlists]
+
+    return make_response(jsonify(result), status.HTTP_200_OK)
 
 ######################################################################
 # READ A WISHLIST
@@ -57,7 +85,7 @@ def create_wishlists():
 
 
 @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
-def get_wishlists(wishlist_id):
+def get_wishlist(wishlist_id):
     """
     Read a single Wishlist
 

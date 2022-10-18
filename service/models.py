@@ -94,6 +94,15 @@ class PersistentBase():
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
 
+    @classmethod
+    def find_by_user_id(cls, user_id: str) -> list:
+        """Returns all wishlists that belong to the given
+
+        Args:
+            user_id (string): the user_id of the entity you want to match
+        """
+        logger.info("Processing user_id query for %s ...", user_id)
+        return cls.query.filter(cls.user_id == user_id)
 
 ######################################################################
 #  I T E M   M O D E L
