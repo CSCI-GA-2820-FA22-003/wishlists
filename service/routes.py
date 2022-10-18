@@ -55,6 +55,7 @@ def create_wishlists():
 # RETRIEVE A WISHLIST
 ######################################################################
 
+
 @app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
 def get_wishlists(wishlist_id):
     """
@@ -77,6 +78,7 @@ def get_wishlists(wishlist_id):
 ######################################################################
 #  ADD AN ITEM TO A WISHLIST
 ######################################################################
+
 
 @app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
 def create_items(wishlist_id):
@@ -108,6 +110,26 @@ def create_items(wishlist_id):
     message = item.serialize()
 
     return make_response(jsonify(message), status.HTTP_201_CREATED)
+
+######################################################################
+# DELETE AN ACCOUNT
+######################################################################
+
+
+@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
+def delete_accounts(wishlist_id):
+    """
+    Delete a Wishlist
+    This endpoint will delete a Wishlist based the id specified in the path
+    """
+    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+
+    # Retrieve the account to delete and delete it if it exists
+    wishlist = Wishlist.find(wishlist_id)
+    if wishlist:
+        wishlist.delete()
+
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
