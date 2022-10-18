@@ -167,3 +167,67 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    
+    
+    def test_update_item(self):
+        """It should Update an item on an wishlist"""
+        # create a known address
+        wishlist = self._create_wishlists(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{wishlist.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+        data["name"] = "XXXX"
+
+        # send the update back
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist.id}/items/{item_id}",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # FIXME when get_item is implemented
+        # # retrieve it back
+        # resp = self.client.get(
+        #     f"{BASE_URL}/{wishlist.id}/items/{item_id}",
+        #     content_type="application/json",
+        # )
+        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # data = resp.get_json()
+        # logging.debug(data)
+        # self.assertEqual(data["id"], item_id)
+        # self.assertEqual(data["wishlist_id"], wishlist.id)
+        # self.assertEqual(data["name"], "XXXX")
+
+    def test_update_item_not_found(self):
+        """It should not Update an item that is not found"""
+        # create a known address
+        wishlist = self._create_wishlists(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{wishlist.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        logging.debug(data)
+        data["name"] = "XXXX"
+
+        # send the update back
+        resp = self.client.put(
+            f"{BASE_URL}/0/items/0",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
