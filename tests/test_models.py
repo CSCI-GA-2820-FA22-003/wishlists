@@ -9,6 +9,7 @@ import unittest
 from service import app
 from service.models import PersistentBase, Wishlist, Item, DataValidationError, db
 from tests.factories import ItemFactory, WishlistFactory
+import random
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -282,3 +283,22 @@ class WishlistModel(unittest.TestCase):
         # Fetch it back again
         wishlist = Wishlist.find(wishlist.id)
         self.assertEqual(len(wishlist.items), 0)
+
+    def test_list_all_wishlist_under_user(self):
+        """It should list all the wishlists belonging to specific user"""
+        wishlists = Wishlist.all()
+        self.assertEqual(wishlists, [])
+
+        random_count = random.randint(1, 10)
+        user_id = random.randint(2000,3000)
+        for wishlist in WishlistFactory.create_batch(random_count, user_id = user_id):
+            wishlist.create()
+        # Assert that there are as many wishlists as we created in the database
+        wishlists = Wishlist.all()
+        self.assertEqual(len(wishlists), random_count)
+
+        # Fetch all wishlists by user_id
+        wishlists = Wishlist.find_by_user_id(user_id)
+        self.assertEqual(wishlists.count(), random_count)
+        for wishlist_iter in wishlists:
+            self.assertEqual(wishlist_iter.user_id, user_id)
