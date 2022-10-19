@@ -23,7 +23,7 @@ logger = logging.getLogger("flask.app")
 def index():
     """ Root URL response """
     return (
-        "Reminder: return some useful information in json format about the service here",
+        "A RESTful wishlist microservice for ecommerce application",
         status.HTTP_200_OK,
     )
 
@@ -51,6 +51,7 @@ def create_wishlists():
     location_url = url_for(
         "get_wishlist", wishlist_id=wishlist.id, _external=True)
 
+    app.logger.info(f"Created Wishlist: {message}")
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
