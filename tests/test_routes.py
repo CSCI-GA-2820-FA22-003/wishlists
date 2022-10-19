@@ -560,3 +560,79 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_an_item_in_wishlist(self):
+        """It should delete an item in a given wishlist"""
+        wishlist = WishlistFactory()
+        resp = self.client.post(BASE_URL,
+                                json=wishlist.serialize())
+        self.assertEqual(
+            resp.status_code,
+            status.HTTP_201_CREATED,
+            "Could not create a test Wishlist",
+        )
+        wishlist_id = resp.get_json()["id"]
+        items = wishlist.items
+        self.assertEqual(len(items), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK, resp.data)
+        data = resp.get_json()
+        self.assertEqual(len(data['items']), 0)
+
+        random_count = random.randint(1, 10)
+        items = []
+        for _ in range(random_count):
+            item = ItemFactory(wishlist=wishlist, wishlist_id=wishlist_id)
+            resp = self.client.post(
+                f"{BASE_URL}/{wishlist_id}/items",
+                json=item.serialize(),
+                content_type="application/json"
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+            items.append(item)
+
+        self.assertEqual(len(items), random_count)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}/items", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), random_count)
+        for idx, new_item in enumerate(data):
+            self.assertEqual(items[idx].id, new_item['id'])
+            self.assertEqual(items[idx].name, new_item['name'])
+            self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
+            self.assertEqual(items[idx].category, new_item['category'])
+            self.assertEqual(items[idx].price, new_item['price'])
+            self.assertEqual(items[idx].description, new_item['description'])
+
+        item_id_to_delete = items[0].id
+        resp = self.client.delete(
+            f"{BASE_URL}/{wishlist_id}/items/{item_id_to_delete}"
+        )
+        print(resp.data)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}/items", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), random_count - 1)
+        self.assertNotIn(item_id_to_delete, [x["id"] for x in data],
+                         f"Couldn't delete {item_id_to_delete}")
+
+        # Sad paths - item doesn't exist in deletion
+        resp = self.client.delete(
+            f"{BASE_URL}/{wishlist_id}/items/{12341234213}"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Sad paths - wishlist doesn't exist in deletion
+        resp = self.client.delete(
+            f"{BASE_URL}/2342343252/items/{item_id_to_delete}"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

@@ -256,6 +256,42 @@ def update_items(wishlist_id, item_id):
 
     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
 
+
+######################################################################
+# DELETE AN ITEM FROM WISHLIST
+######################################################################
+
+
+@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_items(wishlist_id, item_id):
+    """
+    Delete an Item from a wishlist
+
+    """
+    app.logger.info(
+        "Request to delete Item %s for Wishlist id: %s", (item_id, wishlist_id)
+    )
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Wishlist with id '{wishlist_id}' could not be found.",
+        )
+    item = Item.find(item_id)
+    if not item or item.serialize()["wishlist_id"] != wishlist.id:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Item with id '{item_id}' for Wishlist id '{wishlist_id}' could not be found.",
+        )
+    wishlist_data = wishlist.serialize()
+    # TODO: fix model to avoid this deletion of items in a wishlist
+    for item_data in wishlist_data["items"]:
+        Item.find(item_data["id"]).delete()
+    wishlist_data["items"] = list(filter(lambda x: x["id"] != item_id, wishlist_data["items"]))
+    wishlist.deserialize(wishlist_data)
+    wishlist.update()
+    return make_response(jsonify(item.serialize()), status.HTTP_204_NO_CONTENT)
+
 ######################################################################
 # LIST ALL ITEMS IN WISHLIST
 ######################################################################
