@@ -178,10 +178,10 @@ def get_items(wishlist_id, item_id):
 
     # See if the item exists and abort if it doesn't
     item = Item.find(item_id)
-    if not item:
+    if not item or item.serialize()["wishlist_id"] != wishlist_id:
         abort(
             status.HTTP_404_NOT_FOUND,
-            f"Item with id '{item_id}' could not be found.",
+            f"Item with id '{item_id}' for Wishlist id '{wishlist_id}' could not be found.",
         )
 
     return make_response(jsonify(item.serialize()), status.HTTP_200_OK)
@@ -204,7 +204,7 @@ def update_items(wishlist_id, item_id):
 
     # See if the item exists and abort if it doesn't
     item = Item.find(item_id)
-    if not item:
+    if not item or item.serialize()["wishlist_id"] != wishlist_id:
         abort(
             status.HTTP_404_NOT_FOUND,
             f"Item with id '{item_id}' could not be found.",
