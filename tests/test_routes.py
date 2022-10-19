@@ -410,7 +410,7 @@ class TestWishlistService(TestCase):
     def test_add_item(self):
         """It should Add an item to a wishlist"""
         wishlist = self._create_wishlists(1)[0]
-        item = ItemFactory()
+        item = ItemFactory(wishlist_id=wishlist.id)
         resp = self.client.post(
             f"{BASE_URL}/{wishlist.id}/items",
             json=item.serialize(),
