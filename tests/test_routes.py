@@ -399,11 +399,20 @@ class TestWishlistService(TestCase):
 
         data = resp.get_json()
         logging.debug(data)
+        data_id = data["id"]
         data["name"] = "XXXX"
 
-        # send the update back
+        # send the update back with non-existent id
         resp = self.client.put(
-            f"{BASE_URL}/0/items/0",
+            f"{BASE_URL}/{wishlist.id}/items/0",
+            json=data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+        # send the update back with non-existent wishlist_id
+        resp = self.client.put(
+            f"{BASE_URL}/0/items/{data_id}",
             json=data,
             content_type="application/json",
         )
@@ -443,4 +452,27 @@ class TestWishlistService(TestCase):
     def test_get_item_not_found(self):
         """It should not Read an Item that is not found"""
         resp = self.client.get(f"{BASE_URL}/0/items/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_item_wishlist_not_found(self):
+        """It should not Read an Item with incorrect Wishlist"""
+        # create a known item
+        wishlist = self._create_wishlists(1)[0]
+        item = ItemFactory()
+        resp = self.client.post(
+            f"{BASE_URL}/{wishlist.id}/items",
+            json=item.serialize(),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        data = resp.get_json()
+        logging.debug(data)
+        item_id = data["id"]
+
+        # retrieve it with an incorrect wishlist id
+        resp = self.client.get(
+            f"{BASE_URL}/0/items/{item_id}",
+            content_type="application/json",
+        )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
