@@ -353,16 +353,14 @@ def delete_items(wishlist_id, item_id):
     )
     wishlist = Wishlist.find(wishlist_id)
     if not wishlist:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Wishlist with id '{wishlist_id}' could not be found.",
-        )
+        logger.warning("Wishlist id '%s' could not be found.",
+                       wishlist_id)
+        return make_response("", status.HTTP_204_NO_CONTENT)
     item = Item.find(item_id)
     if not item or item.serialize()["wishlist_id"] != wishlist.id:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Item with id '{item_id}' for Wishlist id '{wishlist_id}' could not be found.",
-        )
+        logger.warning("Item with id '%s' for Wishlist id '%s'"
+                       "could not be found.", item_id, wishlist_id)
+        return make_response("", status.HTTP_204_NO_CONTENT)
     wishlist_data = wishlist.serialize()
     # TO-DO: fix model to avoid this deletion of items in a wishlist
     for item_data in wishlist_data["items"]:
