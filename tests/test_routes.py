@@ -630,10 +630,10 @@ class TestWishlistService(TestCase):
         resp = self.client.delete(
             f"{BASE_URL}/{wishlist_id}/items/{12341234213}"
         )
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # Sad paths - wishlist doesn't exist in deletion
         resp = self.client.delete(
             f"{BASE_URL}/2342343252/items/{item_id_to_delete}"
         )
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
