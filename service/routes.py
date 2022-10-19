@@ -21,8 +21,88 @@ logger = logging.getLogger("flask.app")
 @app.route("/")
 def index():
     """ Root URL response """
+    data = dict()
+    data['description'] = "A RESTful wishlist microservice for ECommerce application"
+    data['resources'] = []
+    data['resources'].append(
+        {
+            'method': 'GET',
+            'location': '/',
+            'description': 'Get details about the APIs'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'POST',
+            'location': '/wishlists',
+            'description': 'Create a new wishlist'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'GET',
+            'location': '/wishlists',
+            'description': 'List all wishlists'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'GET',
+            'location': '/wishlists/<wishlist_id>',
+            'description': 'Read wishlists with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'DELETE',
+            'location': '/wishlists/<wishlist_id>',
+            'description': 'Delete wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'PUT',
+            'location': '/wishlists/<wishlist_id>',
+            'description': 'Update wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'POST',
+            'location': '/wishlists/<wishlist_id>/items',
+            'description': 'Add item to wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'GET',
+            'location': '/wishlists/<wishlist_id>/items/<item_id>',
+            'description': 'Read item with item_id to wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'PUT',
+            'location': '/wishlists/<wishlist_id>/items/<item_id>',
+            'description': 'Update item with item_id to wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'DELETE',
+            'location': '/wishlists/<wishlist_id>/items/<item_id>',
+            'description': 'Delete item with item_id to wishlist with id = wishlist_id'
+        }
+    )
+    data['resources'].append(
+        {
+            'method': 'GET',
+            'location': '/wishlists/<wishlist_id>/items',
+            'description': 'List all items under wishlist with id = wishlist_id'
+        }
+    )
     return (
-        "A RESTful wishlist microservice for ecommerce application",
+        jsonify(data),
         status.HTTP_200_OK,
     )
 
