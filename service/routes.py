@@ -1,7 +1,8 @@
 """
-My Service
+Wishlist Service
 
-Describe what your service does here
+
+This microservice handles the collection of products of a user wants
 """
 
 from flask import jsonify, request, url_for, make_response, abort
