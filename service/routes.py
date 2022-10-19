@@ -8,9 +8,12 @@ This microservice handles the collection of products of a user wants
 from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
+import logging
 
 # Import Flask application
 from . import app
+
+logger = logging.getLogger("flask.app")
 
 
 ######################################################################
@@ -123,6 +126,41 @@ def delete_wishlists(wishlist_id):
         wishlist.delete()
 
     return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+######################################################################
+# UPDATE A WISHLIST
+######################################################################
+
+
+@app.route("/wishlists/<int:wishlist_id>", methods=["PUT"])
+def update_wishlist(wishlist_id):
+    """
+    Update a wishlist
+    This endpoint will update a Wishlist based the request body
+    """
+    logger.info(f"Request to update Wishlist id {wishlist_id}")
+
+    check_content_type("application/json")
+
+    # See if the item exists and abort if it doesn't
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        logger.error(f"ABORT: Wishlist with id '{wishlist_id}' could not be found.")
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Wishlist with id '{wishlist_id}' could not be found.",
+        )
+    else:
+        logger.info(f"Wishlist with id {wishlist_id} found")
+
+    # Update from the json in the body of the request
+    data = request.get_json()
+    wishlist.id = wishlist_id
+    wishlist.deserialize(data)
+    wishlist.update()
+
+    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
 ######################################################################

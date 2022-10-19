@@ -13,6 +13,7 @@ from service import app
 from service.models import db, init_db, Wishlist
 from service.common import status  # HTTP Status Codes
 from tests.factories import WishlistFactory, ItemFactory
+from datetime import datetime, timezone
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -136,6 +137,89 @@ class TestWishlistService(TestCase):
             str(wishlist.last_updated),
             "last_updated does not match",
         )
+
+    def test_update_wishlist(self):
+        """It should Update an already existing wishlist"""
+        wishlist = WishlistFactory()
+        json = wishlist.serialize()
+        resp = self.client.post(
+            BASE_URL, json=json, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        wishlist_new = resp.get_json()
+        wishlist_id = wishlist_new["id"]
+        # name
+        wishlist_new["name"] = "newname"
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["name"], "newname",
+                         "Name is not updated to newname")
+        # user_id
+        wishlist_new["user_id"] = 123
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["user_id"], 123,
+                         "user_id is not updated")
+        # created_at
+        date_time = datetime.now(tz=timezone.utc)
+        wishlist_new["created_at"] = str(date_time)
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["created_at"], str(date_time),
+                         "created_at is not updated")
+        # last_updated
+        date_time = datetime.now(tz=timezone.utc)
+        wishlist_new["last_updated"] = str(date_time)
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["last_updated"], str(date_time),
+                         "last_updated is not updated")
+        # items
+        items = [ItemFactory() for _ in range(2)]
+        for item in items:
+            item.wishlist_id = wishlist_id
+        wishlist_new["items"] = [item.serialize() for item in items]
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["items"],
+                         wishlist_new["items"],
+                         "list of items not updated")
+        # Sad path when wishlist doesn't exist
+        resp = self.client.put(
+            f"{BASE_URL}/{12345}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_wishlist(self):
         """It should Read a single Wishlist"""
