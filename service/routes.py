@@ -4,11 +4,10 @@ Wishlist Service
 
 This microservice handles the collection of products of a user wants
 """
-
+import logging
 from flask import jsonify, request, url_for, make_response, abort
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
-import logging
 
 # Import Flask application
 from . import app
@@ -140,20 +139,20 @@ def update_wishlist(wishlist_id):
     Update a wishlist
     This endpoint will update a Wishlist based the request body
     """
-    logger.info(f"Request to update Wishlist id {wishlist_id}")
+    logger.info("Request to update Wishlist id %s", wishlist_id)
 
     check_content_type("application/json")
 
     # See if the item exists and abort if it doesn't
     wishlist = Wishlist.find(wishlist_id)
     if not wishlist:
-        logger.error(f"ABORT: Wishlist with id '{wishlist_id}' could not be found.")
+        logger.error("ABORT: Wishlist with id '%s' could not be found.", wishlist_id)
         abort(
             status.HTTP_404_NOT_FOUND,
             f"Wishlist with id '{wishlist_id}' could not be found.",
         )
     else:
-        logger.info(f"Wishlist with id {wishlist_id} found")
+        logger.info("Wishlist with id %s found", wishlist_id)
 
     # Update from the json in the body of the request
     data = request.get_json()
@@ -285,7 +284,7 @@ def delete_items(wishlist_id, item_id):
             f"Item with id '{item_id}' for Wishlist id '{wishlist_id}' could not be found.",
         )
     wishlist_data = wishlist.serialize()
-    # TODO: fix model to avoid this deletion of items in a wishlist
+    # TO-DO: fix model to avoid this deletion of items in a wishlist
     for item_data in wishlist_data["items"]:
         Item.find(item_data["id"]).delete()
     wishlist_data["items"] = list(filter(lambda x: x["id"] != item_id, wishlist_data["items"]))

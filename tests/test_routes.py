@@ -9,11 +9,12 @@ import os
 import logging
 import random
 from unittest import TestCase
+from datetime import datetime, timezone
 from service import app
 from service.models import db, init_db, Wishlist
 from service.common import status  # HTTP Status Codes
 from tests.factories import WishlistFactory, ItemFactory
-from datetime import datetime, timezone
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
