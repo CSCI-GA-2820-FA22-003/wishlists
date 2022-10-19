@@ -21,7 +21,7 @@ logger = logging.getLogger("flask.app")
 @app.route("/")
 def index():
     """ Root URL response """
-    data = dict()
+    data = {}
     data['description'] = "A RESTful wishlist microservice for ECommerce application"
     data['resources'] = []
     data['resources'].append(
