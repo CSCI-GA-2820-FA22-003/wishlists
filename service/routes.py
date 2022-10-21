@@ -325,6 +325,14 @@ def update_items(wishlist_id, item_id):
     )
     check_content_type("application/json")
 
+    # See if the wishlist exists and abort if it doesn't
+    wishlist = Wishlist.find(wishlist_id)
+    if not wishlist:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Wishlist with id '{wishlist_id}' could not be found.",
+        )
+
     # See if the item exists and abort if it doesn't
     item = Item.find(item_id)
     if not item or item.serialize()["wishlist_id"] != wishlist_id:
