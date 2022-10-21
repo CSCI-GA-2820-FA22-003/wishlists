@@ -276,8 +276,12 @@ def create_items(wishlist_id):
 
     # Prepare a message to return
     message = item.serialize()
+    location_url = url_for(
+        "get_items", wishlist_id=wishlist.id, item_id=item.id, _external=True)
 
-    return make_response(jsonify(message), status.HTTP_201_CREATED)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
 
 ######################################################################
 # READ AN ITEM FROM WISHLIST

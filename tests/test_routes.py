@@ -420,7 +420,21 @@ class TestWishlistService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         data = resp.get_json()
         logging.debug(data)
-        self.assertEqual(data["id"], item.id)
+
+        self.assertEqual(data["name"], item.name)
+        self.assertEqual(data["wishlist_id"], wishlist.id)
+        self.assertEqual(data["category"], item.category)
+        self.assertEqual(data["price"], item.price)
+        self.assertEqual(data["description"], item.description)
+
+        # Make sure location header is set
+        location = resp.headers.get("Location", None)
+        self.assertIsNotNone(location)
+
+        # Check that the location header was correct by getting it
+        resp = self.client.get(location, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
         self.assertEqual(data["name"], item.name)
         self.assertEqual(data["wishlist_id"], wishlist.id)
         self.assertEqual(data["category"], item.category)
