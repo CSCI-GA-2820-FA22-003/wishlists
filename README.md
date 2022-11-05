@@ -2,6 +2,8 @@
 
 [![Build Status](https://github.com/CSCI-GA-2820-FA22-003/wishlists/actions/workflows/tdd.yml/badge.svg)](https://github.com/CSCI-GA-2820-FA22-003/wishlists/actions)
 
+[![codecov](https://codecov.io/github/CSCI-GA-2820-FA22-003/wishlists/branch/main/graph/badge.svg?token=ZOZAX2E6JV)](https://codecov.io/github/CSCI-GA-2820-FA22-003/wishlists)
+
 A RESTful wishlist microservice for ecommerce application
 
 Following routes are available for CRUDL (Create, Read, Update, Delete, List) operations
