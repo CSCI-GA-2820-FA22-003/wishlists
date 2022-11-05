@@ -103,6 +103,9 @@ class TestWishlistService(TestCase):
             new_wishlist["items"], wishlist.items, "Item does not match"
         )
         self.assertEqual(
+            new_wishlist["is_enabled"], wishlist.is_enabled, "Is_enabled does not match"
+        )
+        self.assertEqual(
             new_wishlist["created_at"],
             str(wishlist.created_at),
             "created_at does not match",
@@ -127,6 +130,9 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(
             new_wishlist["items"], wishlist.items, "Item does not match"
+        )
+        self.assertEqual(
+            new_wishlist["is_enabled"], wishlist.is_enabled, "Is_enabled does not match"
         )
         self.assertEqual(
             new_wishlist["created_at"],
@@ -280,6 +286,9 @@ class TestWishlistService(TestCase):
                 new_wishlist["items"], wishlists[idx].items, "Item does not match"
             )
             self.assertEqual(
+                new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
+            )
+            self.assertEqual(
                 new_wishlist["created_at"],
                 str(wishlists[idx].created_at),
                 "created_at does not match",
@@ -312,6 +321,9 @@ class TestWishlistService(TestCase):
                 new_wishlist["items"], wishlists[idx].items, "Item does not match"
             )
             self.assertEqual(
+                new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
+            )
+            self.assertEqual(
                 new_wishlist["created_at"],
                 str(wishlists[idx].created_at),
                 "created_at does not match",
@@ -342,6 +354,9 @@ class TestWishlistService(TestCase):
             )
             self.assertEqual(
                 new_wishlist["items"], wishlists[idx].items, "Item does not match"
+            )
+            self.assertEqual(
+                new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
             )
             self.assertEqual(
                 new_wishlist["created_at"],

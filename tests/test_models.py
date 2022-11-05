@@ -60,6 +60,7 @@ class WishlistModel(unittest.TestCase):
             id=fake_wishlist.id,
             user_id=fake_wishlist.user_id,
             name=fake_wishlist.name,
+            is_enabled=fake_wishlist.is_enabled,
             created_at=fake_wishlist.created_at,
             last_updated=fake_wishlist.last_updated
         )
@@ -68,6 +69,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(wishlist.id, fake_wishlist.id)
         self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
         self.assertEqual(wishlist.name, fake_wishlist.name)
+        self.assertEqual(wishlist.is_enabled, fake_wishlist.is_enabled)
         self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
         self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
 
@@ -93,6 +95,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(found_wishlist.id, wishlist.id)
         self.assertEqual(found_wishlist.user_id, wishlist.user_id)
         self.assertEqual(found_wishlist.name, wishlist.name)
+        self.assertEqual(found_wishlist.is_enabled, wishlist.is_enabled)
         self.assertEqual(found_wishlist.created_at, wishlist.created_at)
         self.assertEqual(found_wishlist.last_updated, wishlist.last_updated)
         self.assertEqual(found_wishlist.items, [])
@@ -150,6 +153,7 @@ class WishlistModel(unittest.TestCase):
             id=fake_wishlist.id,
             user_id=fake_wishlist.user_id,
             name=fake_wishlist.name,
+            is_enabled=fake_wishlist.is_enabled,
             created_at=fake_wishlist.created_at,
             last_updated=fake_wishlist.last_updated
         )
@@ -158,6 +162,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(wishlist.id, fake_wishlist.id)
         self.assertEqual(wishlist.user_id, fake_wishlist.user_id)
         self.assertEqual(wishlist.name, fake_wishlist.name)
+        self.assertEqual(wishlist.is_enabled, fake_wishlist.is_enabled)
         self.assertEqual(wishlist.created_at, fake_wishlist.created_at)
         self.assertEqual(wishlist.last_updated, fake_wishlist.last_updated)
         wishlist_details = repr(fake_wishlist)
@@ -185,6 +190,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(serial_wishlist["id"], wishlist.id)
         self.assertEqual(serial_wishlist["user_id"], wishlist.user_id)
         self.assertEqual(serial_wishlist["name"], wishlist.name)
+        self.assertEqual(serial_wishlist["is_enabled"], wishlist.is_enabled)
         self.assertEqual(serial_wishlist["created_at"], str(wishlist.created_at))
         self.assertEqual(serial_wishlist["last_updated"], str(wishlist.last_updated))
         self.assertEqual(len(serial_wishlist["items"]), 1)
@@ -209,6 +215,7 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(new_wishlist.id, wishlist.id)
         self.assertEqual(new_wishlist.user_id, wishlist.user_id)
         self.assertEqual(new_wishlist.name, wishlist.name)
+        self.assertEqual(new_wishlist.is_enabled, wishlist.is_enabled)
         self.assertEqual(new_wishlist.created_at, str(wishlist.created_at))
         self.assertEqual(new_wishlist.last_updated, str(wishlist.last_updated))
 
