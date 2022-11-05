@@ -1,4 +1,7 @@
 # wishlists
+
+[![Build Status](https://github.com/CSCI-GA-2820-FA22-003/wishlists/actions/workflows/tdd.yml/badge.svg)](https://github.com/CSCI-GA-2820-FA22-003/wishlists/actions)
+
 A RESTful wishlist microservice for ecommerce application
 
 Following routes are available for CRUDL (Create, Read, Update, Delete, List) operations
