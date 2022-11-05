@@ -167,7 +167,7 @@ class Wishlist(db.Model, PersistentBase):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     name = db.Column(db.String(64))
-    is_enabled = db.Column(db.Boolean, default=False)
+    is_enabled = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     last_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
     items = db.relationship("Item", backref="wishlist", passive_deletes=True)
