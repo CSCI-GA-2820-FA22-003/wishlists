@@ -406,7 +406,23 @@ def list_items(wishlist_id):
         )
 
     # Update from the json in the body of the request
-    result = [item.serialize() for item in wishlist.items]
+    # Process the query string if any
+    name = request.args.get("name")
+    category = request.args.get("category")
+
+    result = []
+    if name:
+        items = Item.find_by_name(name)
+        for item in items:
+            if item.serialize()["wishlist_id"] == wishlist_id:
+                result.append(item.serialize())
+    elif category:
+        items = Item.find_by_category(category)
+        for item in items:
+            if item.serialize()["wishlist_id"] == wishlist_id:
+                result.append(item.serialize())
+    else:
+        result = [item.serialize() for item in wishlist.items]
     result = sorted(result, key=lambda item: item['id'])
     return make_response(jsonify(result), status.HTTP_200_OK)
 

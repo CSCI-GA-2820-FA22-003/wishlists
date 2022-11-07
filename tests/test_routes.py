@@ -419,6 +419,93 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_list_all_items_in_wishlist_by_name(self):
+        """It should list all items with a specific name in given wishlist"""
+        wishlist = self._create_wishlists(1)[0]
+        wishlist_id = wishlist.id
+        items = wishlist.items
+        self.assertEqual(len(items), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data['items']), 0)
+
+        # test query item by name
+        test_name = "testqueryname"
+        random_count = random.randint(1, 10)
+        items = []
+        for _ in range(random_count):
+            item = ItemFactory(wishlist=wishlist, wishlist_id=wishlist_id)
+            item.name = test_name
+            resp = self.client.post(
+                f"{BASE_URL}/{wishlist_id}/items",
+                json=item.serialize(),
+                content_type="application/json"
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+            items.append(item)
+
+        # list items with query and make sure that name matches
+        self.assertEqual(len(items), random_count)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}/items?name={test_name}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), random_count)
+        for idx, new_item in enumerate(data):
+            self.assertEqual(items[idx].id, new_item['id'])
+            self.assertEqual(test_name, new_item['name'])
+            self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
+
+    def test_list_all_items_in_wishlist_by_category(self):
+        """It should list all items with a specific category in given wishlist"""
+        wishlist = self._create_wishlists(1)[0]
+        wishlist_id = wishlist.id
+        items = wishlist.items
+        self.assertEqual(len(items), 0)
+
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data['items']), 0)
+
+        # test query item by category
+        test_category = "testcategory"
+        items = []
+        total_item_count = 5
+        test_count = 3
+        for _ in range(total_item_count):
+            item = ItemFactory(wishlist=wishlist, wishlist_id=wishlist_id)
+            if _ < test_count:
+                item.category = test_category
+            resp = self.client.post(
+                f"{BASE_URL}/{wishlist_id}/items",
+                json=item.serialize(),
+                content_type="application/json"
+            )
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+            items.append(item)
+
+        # list items with query and make sure that name matches
+        self.assertEqual(len(items), total_item_count)
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}/items?category={test_category}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), test_count)
+        for idx, new_item in enumerate(data):
+            self.assertEqual(items[idx].id, new_item['id'])
+            self.assertEqual(items[idx].name, new_item['name'])
+            self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
+            self.assertEqual(items[idx].category, test_category)
+
     ######################################################################
     #  ITEM TEST CASES
     ######################################################################

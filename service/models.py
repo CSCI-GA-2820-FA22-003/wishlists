@@ -155,6 +155,16 @@ class Item(db.Model, PersistentBase):
             ) from error
         return self
 
+    @classmethod
+    def find_by_category(cls, category):
+        """Returns all items with the given category
+
+        Args:
+            category (string): the category of the item you want to match
+        """
+        logger.info("Processing category query for %s ...", category)
+        return cls.query.filter(cls.category == category)
+
 
 ######################################################################
 #  W I S H L I S T   M O D E L
