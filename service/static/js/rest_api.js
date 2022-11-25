@@ -6,25 +6,22 @@ $(function () {
 
     // Updates the form with data from the response
     function update_form_data(res) {
-        $("#pet_id").val(res.id);
-        $("#pet_name").val(res.name);
-        $("#pet_category").val(res.category);
-        if (res.available == true) {
-            $("#pet_available").val("true");
+        $("#wishlist_id").val(res.id);
+        $("#wishlist_name").val(res.name);
+        if (res.is_enabled == true) {
+            $("#wishlist_enabled").val("true");
         } else {
-            $("#pet_available").val("false");
+            $("#wishlist_enabled").val("false");
         }
-        $("#pet_gender").val(res.gender);
-        $("#pet_birthday").val(res.birthday);
+        $("#wishlist_uid").val(res.user_id);
     }
 
     /// Clears all form fields
     function clear_form_data() {
-        $("#pet_name").val("");
-        $("#pet_category").val("");
-        $("#pet_available").val("");
-        $("#pet_gender").val("");
-        $("#pet_birthday").val("");
+        $("#wishlist_id").val("");
+        $("#wishlist_name").val("");
+        $("#wishlist_enabled").val("");
+        $("#wishlist_uid").val("");
     }
 
     // Updates the flash message area
@@ -34,30 +31,26 @@ $(function () {
     }
 
     // ****************************************
-    // Create a Pet
+    // Create a Wishlist
     // ****************************************
 
-    $("#create-btn").click(function () {
-
-        let name = $("#pet_name").val();
-        let category = $("#pet_category").val();
-        let available = $("#pet_available").val() == "true";
-        let gender = $("#pet_gender").val();
-        let birthday = $("#pet_birthday").val();
+    $("#create-btn").click(function () {     
+        let name = $("#wishlist_name").val();
+        let user_id = $("#wishlist_uid").val();
+        let is_enabled = $("#wishlist_enabled").val() === 'true';
 
         let data = {
-            "name": name,
-            "category": category,
-            "available": available,
-            "gender": gender,
-            "birthday": birthday
+            name,
+            user_id,
+            items: [],
+            is_enabled
         };
 
         $("#flash_message").empty();
         
         let ajax = $.ajax({
             type: "POST",
-            url: "/pets",
+            url: "/wishlists",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
@@ -68,7 +61,8 @@ $(function () {
         });
 
         ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
+            console.log(res)
+            flash_message((res.responseJSON && res.responseJSON.message) || res.statusText)
         });
     });
 
@@ -115,18 +109,18 @@ $(function () {
     });
 
     // ****************************************
-    // Retrieve a Pet
+    // Retrieve a Wishlist
     // ****************************************
 
     $("#retrieve-btn").click(function () {
 
-        let pet_id = $("#pet_id").val();
+        let id = $("#wishlist_id").val();
 
         $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",
-            url: `/pets/${pet_id}`,
+            url: `/wishlists/${id}`,
             contentType: "application/json",
             data: ''
         })
