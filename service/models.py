@@ -207,12 +207,12 @@ class Wishlist(db.Model, PersistentBase):
             data (dict): A dictionary containing the resource data
         """
         try:
-            self.id = data["id"]
-            self.user_id = data["user_id"]
             self.name = data["name"]
+            self.id = data.get("id")
+            self.user_id = data["user_id"]
             self.is_enabled = data["is_enabled"]
-            self.created_at = data["created_at"]
-            self.last_updated = data["last_updated"]
+            self.created_at = data.get("created_at")
+            self.last_updated = data.get("last_updated")
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
