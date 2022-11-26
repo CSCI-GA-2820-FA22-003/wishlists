@@ -51,3 +51,20 @@ Scenario: Get a Wishlist
     And I should see "Wishlist 2" in the "Name" field
     And I should see "123" in the "uid" field
     And I should see "True" in the "Enabled" dropdown
+
+Scenario: Delete a Wishlist
+    When I visit the "Home Page"
+    And I set "Name" to "Wishlist 3"
+    And I set "uid" to "123"
+    And I select "True" in the "Enabled" dropdown
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    And the "uid" field should be empty
+    And the "Enabled" field should be empty
+    When I paste the "Id" field
+    And I press the "Delete" button
+    Then I should see the message "Wishlist has been Deleted!"
