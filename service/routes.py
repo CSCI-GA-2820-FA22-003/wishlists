@@ -162,7 +162,7 @@ def update_wishlist(wishlist_id):
         logger.info("Wishlist with id %s found", wishlist_id)
 
     # Update from the json in the body of the request
-    data = request.get_json()    
+    data = request.get_json()
     wishlist.deserialize(data)
     wishlist.id = wishlist_id
     wishlist.update()
