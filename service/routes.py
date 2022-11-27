@@ -130,6 +130,8 @@ def delete_wishlists(wishlist_id):
     # Retrieve the wishlist to delete and delete it if it exists
     wishlist = Wishlist.find(wishlist_id)
     if wishlist:
+        for item in wishlist.items:
+            item.delete()
         wishlist.delete()
 
     return make_response("", status.HTTP_204_NO_CONTENT)
