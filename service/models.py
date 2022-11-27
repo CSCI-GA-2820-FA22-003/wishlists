@@ -87,7 +87,7 @@ class PersistentBase():
             name (string): the name of the entity you want to match
         """
         logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        return cls.query.filter(cls.name.contains(name))
 
     @classmethod
     def find_by_user_id(cls, user_id: str) -> list:
