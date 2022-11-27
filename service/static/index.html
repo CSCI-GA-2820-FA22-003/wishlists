@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Wishlist REST API Service</title>
+    <title>Wishlist RESTful Service</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -82,13 +82,26 @@
 
       <!-- Search Results -->
       <div class="table-responsive col-md-12" id="search_results">
-        <table class="table table-striped">
+        <table class="table table-striped", id="wishlist_results", style="display:none">
           <thead>
           <tr>
             <th class="col-md-1">ID</th>            
-            <th class="col-md-4">Name</th>
-            <th class="col-md-4">User ID</th>
-            <th class="col-md-3">Enabled</th>            
+            <th class="col-md-2">Name</th>
+            <th class="col-md-2">User ID</th>
+            <th class="col-md-3">Created At</th>
+            <th class="col-md-3">Last Modified</th>
+            <th class="col-md-1">Enabled</th>
+          </tr>
+          </thead>
+        </table>
+        <table class="table table-striped", id="wishlist_items", style="display:none">
+          <thead>
+          <tr>
+            <th class="col-md-1">ID</th>            
+            <th class="col-md-2">Name</th>
+            <th class="col-md-2">Category</th>
+            <th class="col-md-2">Price</th>
+            <th class="col-md-3">Description</th>
           </tr>
           </thead>
         </table>
