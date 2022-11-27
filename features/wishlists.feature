@@ -104,3 +104,15 @@ Scenario: Update a Wishlist
     And I press the "Retrieve" button
     Then I should see the message "Success"
     And I should see "Wishlist 4 Updated" in the "Name" field
+
+Scenario: Retrieve a Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "wishlist" table
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "Christmas Wishlist" in the "Name" field
+    And I should see item "1" with "XBOX 360" in the "Name" field
+    And I should see item "2" with "XBOX One X" in the "Name" field

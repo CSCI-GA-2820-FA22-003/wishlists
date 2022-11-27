@@ -139,10 +139,15 @@ $(function () {
                 let wishlist = res.items[i];
                 var row = table.insertRow(-1);
                 var id=row.insertCell(0);
+                id.id = "item_entry-"+(i+1)+"-id";
                 var name=row.insertCell(1);
+                name.id = "item_entry-"+(i+1)+"-name";
                 var category=row.insertCell(2);
+                category.id = "item_entry-"+(i+1)+"-category";
                 var price=row.insertCell(3);
+                price.id = "item_entry-"+(i+1)+"-price";
                 var description=row.insertCell(4);
+                description.id = "item_entry-"+(i+1)+"-description";
                 id.innerHTML = wishlist.id;
                 name.innerHTML = wishlist.name;
                 category.innerHTML = wishlist.category;
@@ -253,11 +258,17 @@ $(function () {
                 var last_updated=row.insertCell(4);
                 var is_enabled=row.insertCell(5);
                 id.innerHTML = wishlist.id;
+                id.id = "wishlist_entry-"+(i+1)+"-id";
                 name.innerHTML = wishlist.name;
+                name.id = "wishlist_entry-"+(i+1)+"-name";
                 user_id.innerHTML = wishlist.user_id;
+                user_id.id = "wishlist_entry-"+(i+1)+"-user_id";
                 created_at.innerHTML = wishlist.created_at;
+                created_at.id = "wishlist_entry-"+(i+1)+"-created_at";
                 last_updated.innerHTML = wishlist.last_updated;
+                last_updated.id = "wishlist_entry-"+(i+1)+"-last_updated";
                 is_enabled.innerHTML = wishlist.is_enabled;
+                is_enabled.id = "wishlist_entry-"+(i+1)+"-is_enabled";
                 if (i == 0) {
                     firstWishlist = wishlist;
                 }
