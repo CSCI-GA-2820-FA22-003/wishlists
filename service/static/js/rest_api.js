@@ -22,6 +22,10 @@ $(function () {
         $("#wishlist_name").val("");
         $("#wishlist_enabled").val("");
         $("#wishlist_uid").val("");
+        document.getElementById("wishlist_items").style.display="none";
+        document.getElementById("items_title").style.display="none";
+        document.getElementById("wishlist_results").style.display="none";
+        document.getElementById("wishlists_title").style.display="none";
     }
 
     // Updates the flash message area
@@ -112,7 +116,7 @@ $(function () {
 
     $("#retrieve-btn").click(function () {
 
-        let id = $("#wishlist_id").val();
+        var id = $("#wishlist_id").val();
 
         $("#flash_message").empty();
 
@@ -126,6 +130,26 @@ $(function () {
         ajax.done(function(res){
             //alert(res.toSource())
             update_form_data(res);
+            document.getElementById("wishlist_items").style.display="table";
+            document.getElementById("items_title").style.display="block";
+            document.getElementById("items_title").innerHTML=`Items in Wishlist ${res.id}`;
+            var table = document.getElementById("wishlist_items_body");
+            table.innerHTML = "";
+            for(let i = 0; i < res.items.length; i++) {
+                let wishlist = res.items[i];
+                var row = table.insertRow(-1);
+                var id=row.insertCell(0);
+                var name=row.insertCell(1);
+                var category=row.insertCell(2);
+                var price=row.insertCell(3);
+                var description=row.insertCell(4);
+                id.innerHTML = wishlist.id;
+                name.innerHTML = wishlist.name;
+                category.innerHTML = wishlist.category;
+                price.innerHTML = wishlist.price;
+                description.innerHTML = wishlist.description;
+            }
+            flash_message(JSON.stringify(res));
             flash_message("Success");
         });
 
@@ -214,8 +238,8 @@ $(function () {
 
         ajax.done(function(res){
             //alert(res.toSource())
-            var table = document.getElementById("wishlist_results");
-            table.style.display="table";
+            document.getElementById("wishlist_results").style.display="table";
+            document.getElementById("wishlists_title").style.display="block";
             var table = document.getElementById("wishlist_results_body");
             table.innerHTML = "";
             let firstWishlist = "";
