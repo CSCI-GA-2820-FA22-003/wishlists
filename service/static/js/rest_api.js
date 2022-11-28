@@ -28,6 +28,15 @@ $(function () {
         document.getElementById("wishlists_title").style.display="none";
     }
 
+    /// Clears all item form fields
+    function clear_item_form_data() {
+        $("#item_id").val("");
+        $("#item_name").val("");
+        $("#item_category").val("");
+        $("#item_price").val("");
+        $("#item_description").val("");
+    }
+
     // Updates the flash message area
     function flash_message(message) {
         $("#flash_message").empty();
@@ -61,6 +70,54 @@ $(function () {
 
         ajax.done(function(res){
             update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function (res) {
+            console.log(res)
+            flash_message((res.responseJSON && res.responseJSON.message) || res.statusText)
+        });
+    });
+
+
+
+    // ****************************************
+    // Create an Item
+    // ****************************************
+
+    $("#create-item-btn").click(function () {
+        if($("#items_title")[0].style.display == 'none'){
+            flash_message("No Wishlist retrieved");
+            return;
+        }
+        let wishlist_id = $("#items_title")[0].innerHTML;
+        wishlist_id = wishlist_id.slice(wishlist_id.lastIndexOf(' ')+1);
+        let id = $("#item_id").val();
+        let name = $("#item_name").val();
+        let category = $("#item_category").val();
+        let price = $("#item_price").val();
+        let description = $("#item_description").val();
+
+        let data = {
+            id,
+	        wishlist_id: wishlist_id, 
+            name,
+            category,
+            price: parseInt(price),
+            description
+        };
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "POST",
+            url: `/wishlists/${wishlist_id}/items`,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            clear_item_form_data()
+            $("#retrieve-btn").click();
             flash_message("Success")
         });
 
@@ -200,6 +257,16 @@ $(function () {
         $("#wishlist_id").val("");
         $("#flash_message").empty();
         clear_form_data()
+    });
+
+    // ****************************************
+    // Clear the Item form
+    // ****************************************
+
+    $("#clear-item-btn").click(function () {
+        $("#item_id").val("");
+        $("#flash_message").empty();
+        clear_item_form_data()
     });
 
     // ****************************************
