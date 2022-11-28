@@ -163,3 +163,19 @@ Scenario: Delete Item from Wishlist
     And I press the "delete-item" button
     Then I should see the message "Success"
     And I should see item "1" with "XBOX One X" in the "Name" field
+
+Scenario: Retrieve Item from Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "wishlist" table
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "item" table
+    And I paste the item "id" field
+    And I press the "retrieve-item" button
+    Then I should see "XBOX 360" in the "name" item field
+    Then I should see "gaming" in the "category" item field
+    Then I should see "350" in the "price" item field
+    Then I should see "Gaming console released in 2012" in the "description" item field

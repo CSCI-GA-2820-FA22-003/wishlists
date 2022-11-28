@@ -91,6 +91,17 @@ def step_impl(context, text_string, element_name):
     )
     expect(found).to_be(True)
 
+@then('I should see "{text_string}" in the "{element_name}" item field')
+def step_impl(context, text_string, element_name):
+    element_id = 'item_' + element_name.lower().replace(' ', '_')
+    found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element_value(
+            (By.ID, element_id),
+            text_string
+        )
+    )
+    expect(found).to_be(True)
+
 @then('I should see wishlist "{wishlist_number}" with "{text_string}" in the "{element_name}" field')
 def step_impl(context, wishlist_number, text_string, element_name):
     element_id = "wishlist_entry-" + wishlist_number + '-' + element_name.lower().replace(' ', '_')
