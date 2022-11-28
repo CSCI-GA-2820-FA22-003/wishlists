@@ -210,6 +210,52 @@ $(function () {
     });
 
     // ****************************************
+    // Update an Item in a Wishlist
+    // ****************************************
+
+    $("#update-item-btn").click(function () {
+        
+        if($("#items_title")[0].style.display == 'none'){
+            flash_message("No Wishlist retrieved");
+            return;
+        }
+        let wishlist_id = $("#items_title")[0].innerHTML;
+        wishlist_id = wishlist_id.slice(wishlist_id.lastIndexOf(' ')+1);
+        let id = $("#item_id").val();
+        let name = $("#item_name").val();
+        let category = $("#item_category").val();
+        let price = $("#item_price").val();
+        let description = $("#item_description").val();
+        let data = {
+            category,
+            description,
+            id: id,
+            name,
+            price,
+            wishlist_id: wishlist_id
+        };
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/wishlists/${wishlist_id}/items/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data)
+            })
+
+        ajax.done(function(res){
+            clear_item_form_data()
+            $("#retrieve-btn").click();
+            flash_message("Success");
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Retrieve a Wishlist
     // ****************************************
 
@@ -234,6 +280,7 @@ $(function () {
             document.getElementById("items_title").innerHTML=`Items in Wishlist ${res.id}`;
             var table = document.getElementById("wishlist_items_body");
             table.innerHTML = "";
+            res.items = res.items.sort((a,b) => (a.id > b.id) ? 1 : -1)
             for(let i = 0; i < res.items.length; i++) {
                 let wishlist = res.items[i];
                 var row = table.insertRow(-1);
@@ -392,6 +439,7 @@ $(function () {
             var table = document.getElementById("wishlist_results_body");
             table.innerHTML = "";
             let firstWishlist = "";
+            res = res.sort((a,b) => (a.id > b.id) ? 1 : -1)
             for(let i = 0; i < res.length; i++) {
                 let wishlist = res[i];
                 var row = table.insertRow(-1);
