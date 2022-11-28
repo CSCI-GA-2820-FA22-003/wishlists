@@ -263,7 +263,6 @@ $(function () {
 
         var id = $("#wishlist_id").val();
 
-        $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "GET",

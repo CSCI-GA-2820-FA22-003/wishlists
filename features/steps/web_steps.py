@@ -118,6 +118,7 @@ def step_impl(context, item_number, text_string, element_name):
     element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
         expected_conditions.presence_of_element_located((By.ID, element_id))
     )
+    logging.info('id is: %s',element.get_attribute('innerHTML'))
     expect(element.get_attribute('innerHTML') == text_string).to_be(True)
 
 ##################################################################

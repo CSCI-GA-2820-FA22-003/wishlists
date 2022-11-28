@@ -179,3 +179,27 @@ Scenario: Retrieve Item from Wishlist
     Then I should see "gaming" in the "category" item field
     Then I should see "350" in the "price" item field
     Then I should see "Gaming console released in 2012" in the "description" item field
+
+Scenario: Update Item from Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "wishlist" table
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "item" table
+    And I paste the item "id" field
+    And I press the "retrieve-item" button
+    Then I should see the message "Success"
+    When I set the item "Name" to "XBOX 3600"
+    And I set the item "Category" to "GamingUpdated"
+    And I set the item "Price" to "300"
+    And I set the item "Description" to "Updated Gaming console released in 2012"
+    And I press the "update-item" button
+    Then I should see the message "Success"
+    And I should see item "1" with "XBOX 3600" in the "Name" field
+    And I should see item "1" with "GamingUpdated" in the "Category" field
+    And I should see item "1" with "300" in the "Price" field
+    And I should see item "1" with "Updated Gaming console released in 2012" in the "Description" field
+    
