@@ -86,8 +86,17 @@ def step_impl(context, text_string, element_name):
     )
     expect(found).to_be(True)
 
+@then('I should see item "{item_number}" with "{text_string}" in the "{element_name}" field')
+def step_impl(context, item_number, text_string, element_name):
+    element_id = "item_entry-" + item_number + '-' + element_name.lower().replace(' ', '_')
+    logging.info('id is: %s',element_id)
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    expect(element.get_attribute('innerHTML') == text_string).to_be(True)
+
 ##################################################################
-# These two function simulate copy and paste
+# These functions simulate copy and paste
 ##################################################################
 @when('I copy the "{element_name}" field')
 def step_impl(context, element_name):
@@ -96,6 +105,15 @@ def step_impl(context, element_name):
         expected_conditions.presence_of_element_located((By.ID, element_id))
     )
     context.clipboard = element.get_attribute('value')
+    logging.info('Clipboard contains: %s', context.clipboard)
+
+@when('I copy the first "{element_name}" entry in "{table_name}" table')
+def step_impl(context, element_name, table_name):
+    element_id = table_name + '_entry-1-' + element_name.lower().replace(' ', '_')
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    context.clipboard = element.get_attribute('innerHTML')
     logging.info('Clipboard contains: %s', context.clipboard)
 
 @when('I paste the "{element_name}" field')

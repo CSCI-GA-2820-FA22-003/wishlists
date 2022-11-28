@@ -22,6 +22,10 @@ $(function () {
         $("#wishlist_name").val("");
         $("#wishlist_enabled").val("");
         $("#wishlist_uid").val("");
+        document.getElementById("wishlist_items").style.display="none";
+        document.getElementById("items_title").style.display="none";
+        document.getElementById("wishlist_results").style.display="none";
+        document.getElementById("wishlists_title").style.display="none";
     }
 
     // Updates the flash message area
@@ -112,7 +116,7 @@ $(function () {
 
     $("#retrieve-btn").click(function () {
 
-        let id = $("#wishlist_id").val();
+        var id = $("#wishlist_id").val();
 
         $("#flash_message").empty();
 
@@ -126,6 +130,31 @@ $(function () {
         ajax.done(function(res){
             //alert(res.toSource())
             update_form_data(res);
+            document.getElementById("wishlist_items").style.display="table";
+            document.getElementById("items_title").style.display="block";
+            document.getElementById("items_title").innerHTML=`Items in Wishlist ${res.id}`;
+            var table = document.getElementById("wishlist_items_body");
+            table.innerHTML = "";
+            for(let i = 0; i < res.items.length; i++) {
+                let wishlist = res.items[i];
+                var row = table.insertRow(-1);
+                var id=row.insertCell(0);
+                id.id = "item_entry-"+(i+1)+"-id";
+                var name=row.insertCell(1);
+                name.id = "item_entry-"+(i+1)+"-name";
+                var category=row.insertCell(2);
+                category.id = "item_entry-"+(i+1)+"-category";
+                var price=row.insertCell(3);
+                price.id = "item_entry-"+(i+1)+"-price";
+                var description=row.insertCell(4);
+                description.id = "item_entry-"+(i+1)+"-description";
+                id.innerHTML = wishlist.id;
+                name.innerHTML = wishlist.name;
+                category.innerHTML = wishlist.category;
+                price.innerHTML = wishlist.price;
+                description.innerHTML = wishlist.description;
+            }
+            flash_message(JSON.stringify(res));
             flash_message("Success");
         });
 
@@ -214,8 +243,8 @@ $(function () {
 
         ajax.done(function(res){
             //alert(res.toSource())
-            var table = document.getElementById("wishlist_results");
-            table.style.display="table";
+            document.getElementById("wishlist_results").style.display="table";
+            document.getElementById("wishlists_title").style.display="block";
             var table = document.getElementById("wishlist_results_body");
             table.innerHTML = "";
             let firstWishlist = "";
@@ -229,11 +258,17 @@ $(function () {
                 var last_updated=row.insertCell(4);
                 var is_enabled=row.insertCell(5);
                 id.innerHTML = wishlist.id;
+                id.id = "wishlist_entry-"+(i+1)+"-id";
                 name.innerHTML = wishlist.name;
+                name.id = "wishlist_entry-"+(i+1)+"-name";
                 user_id.innerHTML = wishlist.user_id;
+                user_id.id = "wishlist_entry-"+(i+1)+"-user_id";
                 created_at.innerHTML = wishlist.created_at;
+                created_at.id = "wishlist_entry-"+(i+1)+"-created_at";
                 last_updated.innerHTML = wishlist.last_updated;
+                last_updated.id = "wishlist_entry-"+(i+1)+"-last_updated";
                 is_enabled.innerHTML = wishlist.is_enabled;
+                is_enabled.id = "wishlist_entry-"+(i+1)+"-is_enabled";
                 if (i == 0) {
                     firstWishlist = wishlist;
                 }
