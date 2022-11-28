@@ -61,13 +61,11 @@ def step_impl(context, button):
 
 @then('I should see the message "{message}"')
 def step_impl(context, message):
-    found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
-        expected_conditions.text_to_be_present_in_element(
-            (By.ID, 'flash_message'),
-            message
-        )
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, 'flash_message'))
     )
-    expect(found).to_be(True)
+    logging.info("inner html text is %s",element.get_attribute('innerHTML'))
+    expect(element.get_attribute('innerHTML') == message).to_be(True)
 
 @then('the "{element_name}" field should be empty')
 def step_impl(context, element_name):
@@ -135,6 +133,15 @@ def step_impl(context, element_name, table_name):
 @when('I paste the "{element_name}" field')
 def step_impl(context, element_name):
     element_id = ID_PREFIX + element_name.lower().replace(' ', '_')
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    element.clear()
+    element.send_keys(context.clipboard)
+
+@when('I paste the item "{element_name}" field')
+def step_impl(context, element_name):
+    element_id = 'item_' + element_name.lower().replace(' ', '_')
     element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
         expected_conditions.presence_of_element_located((By.ID, element_id))
     )

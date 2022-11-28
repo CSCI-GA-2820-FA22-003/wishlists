@@ -148,3 +148,18 @@ Scenario: Add Item to Wishlist
     And I should see item "3" with "Gaming" in the "Category" field
     And I should see item "3" with "300" in the "Price" field
     And I should see item "3" with "New Item description" in the "Description" field
+
+Scenario: Delete Item from Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "wishlist" table
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see item "1" with "XBOX 360" in the "Name" field
+    When I copy the first "Id" entry in "item" table
+    And I paste the item "id" field
+    And I press the "delete-item" button
+    Then I should see the message "Success"
+    And I should see item "1" with "XBOX One X" in the "Name" field

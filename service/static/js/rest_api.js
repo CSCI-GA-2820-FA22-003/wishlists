@@ -129,6 +129,40 @@ $(function () {
 
 
     // ****************************************
+    // Delete an Item
+    // ****************************************
+
+    $("#delete-item-btn").click(function () {
+        if($("#items_title")[0].style.display == 'none'){
+            flash_message("No Wishlist retrieved");
+            return;
+        }
+        let wishlist_id = $("#items_title")[0].innerHTML;
+        wishlist_id = wishlist_id.slice(wishlist_id.lastIndexOf(' ')+1);
+        let id = $("#item_id").val();
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "DELETE",
+            url: `/wishlists/${wishlist_id}/items/${id}`,
+            contentType: "application/json",
+            data: '',
+        });
+
+        ajax.done(function(res){
+            clear_item_form_data()
+            $("#retrieve-btn").click();
+            flash_message("Success");
+        });
+
+        ajax.fail(function (res) {
+            console.log(res)
+            flash_message((res.responseJSON && res.responseJSON.message) || res.statusText)
+        });
+    });
+
+
+    // ****************************************
     // Update a Wishlist
     // ****************************************
 
