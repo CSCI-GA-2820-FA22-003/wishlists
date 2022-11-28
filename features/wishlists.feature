@@ -105,6 +105,18 @@ Scenario: Update a Wishlist
     Then I should see the message "Success"
     And I should see "Wishlist 4 Updated" in the "Name" field
 
+Scenario: Query a Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see wishlist "1" with "Christmas Wishlist" in the "Name" field
+    And I should see wishlist "2" with "Birthday Wishlist" in the "Name" field
+    And I should see wishlist "3" with "Secondary Wishlist" in the "Name" field
+    When I press the "Clear" button
+    And I set "Name" to "Birthday"
+    And I press the "Search" button
+    Then I should see wishlist "1" with "Birthday Wishlist" in the "Name" field
+
 Scenario: Retrieve a Wishlist
     When I visit the "Home Page"
     And I press the "Search" button
