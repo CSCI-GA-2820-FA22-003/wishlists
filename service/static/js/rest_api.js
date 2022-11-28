@@ -125,13 +125,13 @@ $(function () {
 
         ajax.done(function(res){
             //alert(res.toSource())
-            update_form_data(res)
-            flash_message("Success")
+            update_form_data(res);
+            flash_message("Success");
         });
 
         ajax.fail(function(res){
-            clear_form_data()
-            flash_message(res.responseJSON.message)
+            clear_form_data();
+            flash_message(res.responseJSON.message);
         });
 
     });
@@ -214,28 +214,29 @@ $(function () {
 
         ajax.done(function(res){
             //alert(res.toSource())
-            $("#search_results").empty();
-            let table = '<table class="table table-striped" cellpadding="10">'
-            table += '<thead><tr>'
-            table += '<th class="col-md-2">ID</th>'
-            table += '<th class="col-md-2">Name</th>'
-            table += '<th class="col-md-2">UserId</th>'
-            table += '<th class="col-md-2">Enabled</th>'
-            table += '</tr></thead><tbody>'
+            var table = document.getElementById("wishlist_results");
+            table.style.display="table";
+            var table = document.getElementById("wishlist_results_body");
+            table.innerHTML = "";
             let firstWishlist = "";
             for(let i = 0; i < res.length; i++) {
                 let wishlist = res[i];
-                table +=  `<tr id="row_${i}"><td>${wishlist.id}</td><td>${wishlist.name}</td><td>${wishlist.user_id}</td><td>${wishlist.is_enabled}</td></tr>`;
+                var row = table.insertRow(-1);
+                var id=row.insertCell(0);
+                var name=row.insertCell(1);
+                var user_id=row.insertCell(2);
+                var created_at=row.insertCell(3);
+                var last_updated=row.insertCell(4);
+                var is_enabled=row.insertCell(5);
+                id.innerHTML = wishlist.id;
+                name.innerHTML = wishlist.name;
+                user_id.innerHTML = wishlist.user_id;
+                created_at.innerHTML = wishlist.created_at;
+                last_updated.innerHTML = wishlist.last_updated;
+                is_enabled.innerHTML = wishlist.is_enabled;
                 if (i == 0) {
                     firstWishlist = wishlist;
                 }
-            }
-            table += '</tbody></table>';
-            $("#search_results").append(table);
-
-            // copy the first result to the form
-            if (firstWishlist != "") {
-                update_form_data(firstWishlist)
             }
 
             flash_message("Success")
