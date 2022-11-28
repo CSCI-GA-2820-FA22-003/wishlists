@@ -93,6 +93,15 @@ def step_impl(context, text_string, element_name):
     )
     expect(found).to_be(True)
 
+@then('I should see wishlist "{wishlist_number}" with "{text_string}" in the "{element_name}" field')
+def step_impl(context, wishlist_number, text_string, element_name):
+    element_id = "wishlist_entry-" + wishlist_number + '-' + element_name.lower().replace(' ', '_')
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    logging.info("the text is %s and compare element is %s",element.get_attribute('innerHTML'), text_string)
+    expect(element.get_attribute('innerHTML') == text_string).to_be(True)
+
 @then('I should see item "{item_number}" with "{text_string}" in the "{element_name}" field')
 def step_impl(context, item_number, text_string, element_name):
     element_id = "item_entry-" + item_number + '-' + element_name.lower().replace(' ', '_')
