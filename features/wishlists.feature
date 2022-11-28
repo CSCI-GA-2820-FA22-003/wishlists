@@ -116,3 +116,23 @@ Scenario: Retrieve a Wishlist
     And I should see "Christmas Wishlist" in the "Name" field
     And I should see item "1" with "XBOX 360" in the "Name" field
     And I should see item "2" with "XBOX One X" in the "Name" field
+
+Scenario: Add Item to Wishlist
+    When I visit the "Home Page"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the first "Id" entry in "wishlist" table
+    And I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    When I set the item "Id" to "3"
+    And I set the item "Name" to "New Item"
+    And I set the item "Category" to "Gaming"
+    And I set the item "Price" to "300"
+    And I set the item "Description" to "New Item description"
+    And I press the "create-item" button
+    Then I should see the message "Success"
+    And I should see item "3" with "New Item" in the "Name" field
+    And I should see item "3" with "Gaming" in the "Category" field
+    And I should see item "3" with "300" in the "Price" field
+    And I should see item "3" with "New Item description" in the "Description" field
