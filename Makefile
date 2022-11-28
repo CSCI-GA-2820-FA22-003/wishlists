@@ -88,3 +88,17 @@ remove:	## Stop and remove the buildx builder
 	$(info Stopping and removing the builder image...)
 	docker buildx stop
 	docker buildx rm
+
+.PHONY: deploy-dev
+deploy-dev:	## Deploy the application to dev namespace
+	$(info Deploying to dev namespace...)
+	kubectl -n dev apply -f deploy/dev/namespace.yaml
+	kubectl -n default get secret all-icr-io -o yaml | sed 's/default/dev/g' | kubectl -n dev apply -f -
+	kubectl -n dev apply -f deploy/dev
+
+.PHONY: deploy-prod
+deploy-prod:	## Deploy the application to prod namespace
+	$(info Deploying to prod namespace...)
+	kubectl -n prod apply -f deploy/prod/namespace.yaml
+	kubectl -n default get secret all-icr-io -o yaml | sed 's/default/prod/g' | kubectl -n prod apply -f -
+	kubectl -n prod apply -f deploy/prod
