@@ -2,6 +2,7 @@
 # flake8: noqa
 
 import logging
+from time import sleep
 from behave import given, when, then
 from compare import expect, ensure
 from selenium.webdriver.common.by import By
@@ -58,6 +59,7 @@ def step_impl(context, text, element_name):
 def step_impl(context, button):
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
+    sleep(0.5)
 
 @then('I should see the message "{message}"')
 def step_impl(context, message):
