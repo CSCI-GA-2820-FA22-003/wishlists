@@ -176,9 +176,9 @@ Scenario: Retrieve Item from Wishlist
     And I paste the item "id" field
     And I press the "retrieve-item" button
     Then I should see "XBOX 360" in the "name" item field
-    Then I should see "gaming" in the "category" item field
-    Then I should see "350" in the "price" item field
-    Then I should see "Gaming console released in 2012" in the "description" item field
+    And I should see "gaming" in the "category" item field
+    And I should see "350" in the "price" item field
+    And I should see "Gaming console released in 2012" in the "description" item field
 
 Scenario: Update Item from Wishlist
     When I visit the "Home Page"
