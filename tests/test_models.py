@@ -39,7 +39,7 @@ class WishlistModel(unittest.TestCase):
     def setUp(self):
         """This runs before each test"""
         db.session.query(Wishlist).delete()  # clean up the last tests
-        db.session.query(Wishlist).delete()  # clean up the last tests
+        db.session.query(Item).delete()  # clean up the last tests
         db.session.commit()
 
     def tearDown(self):
@@ -216,8 +216,8 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(new_wishlist.user_id, wishlist.user_id)
         self.assertEqual(new_wishlist.name, wishlist.name)
         self.assertEqual(new_wishlist.is_enabled, wishlist.is_enabled)
-        self.assertEqual(new_wishlist.created_at, str(wishlist.created_at))
-        self.assertEqual(new_wishlist.last_updated, str(wishlist.last_updated))
+        self.assertEqual(new_wishlist.created_at, wishlist.created_at)
+        self.assertEqual(new_wishlist.last_updated, wishlist.last_updated)
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize a Wishlist with a KeyError"""
