@@ -39,6 +39,7 @@ lint: ## Run the linter
 	flake8 service tests --count --max-complexity=10 --max-line-length=127 --statistics
 	pylint service tests --max-line-length=127
 
+# Ideally we should run env "DATABASE_URI=sqlite:///test.db nosetests --with-spec --spec-color" as well
 .PHONY: test
 test: ## Run the unit tests
 	$(info Running tests...)

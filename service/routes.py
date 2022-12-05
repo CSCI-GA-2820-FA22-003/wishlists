@@ -46,10 +46,12 @@ def create_wishlists():
     """
     app.logger.info("Request to create an Wishlist")
     check_content_type("application/json")
+    data = request.get_json()
+    app.logger.info("Request to create an Wishlist with data: %s", data)
 
     # Create the wishlist
     wishlist = Wishlist()
-    wishlist.deserialize(request.get_json())
+    wishlist.deserialize(data)
     wishlist.create()
 
     # Create a message to return
