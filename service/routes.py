@@ -41,7 +41,7 @@ create_model = api.model('Wishlist', {
 })
 
 wishlist_model = api.inherit(
-    'WishlistModel', 
+    'WishlistModel',
     create_model,
     {
         '_id': fields.String(readOnly=True, description='The unique id assigned internally by service'),
