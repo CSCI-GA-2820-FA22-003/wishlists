@@ -23,9 +23,9 @@ api = Api(app,
           description='This is a sample server Wishlist server.',
           default='wishlists',
           default_label='Wishlist operations',
-          doc='/apidocs', # default also could use doc='/apidocs/'          
+          doc='/apidocs',  # default also could use doc='/apidocs/'
           prefix='/api'
-         )
+        )
 
 # Dependencies require we import the routes AFTER the Flask app is created
 # pylint: disable=wrong-import-position, wrong-import-order, cyclic-import

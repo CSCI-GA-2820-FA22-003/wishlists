@@ -6,7 +6,8 @@ This microservice handles the collection of products of a user wants
 """
 import logging
 from flask import jsonify, request, url_for, make_response, abort
-from flask_restx import Api, Resource, fields, reqparse, inputs
+# from flask_restx import Api, Resource, fields, reqparse, inputs
+from flask_restx import fields
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
 
@@ -27,8 +28,7 @@ item_model = api.inherit(
     'ItemModel',
     create_item_model,
     {
-        'id': fields.Integer(readOnly=True, 
-                            description='The unique id assigned internally by service'),
+        'id': fields.Integer(readOnly=True, description='The unique id assigned internally by service'),
     }
 )
 
@@ -44,14 +44,15 @@ wishlist_model = api.inherit(
     'WishlistModel', 
     create_model,
     {
-        '_id': fields.String(readOnly=True,
-                            description='The unique id assigned internally by service'),
+        '_id': fields.String(readOnly=True, description='The unique id assigned internally by service'),
     }
 )
 
 ############################################################
 # Health Endpoint
 ############################################################
+
+
 @app.route("/health")
 def health():
     """Health Status"""
