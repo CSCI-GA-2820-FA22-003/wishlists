@@ -4,6 +4,7 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 
@@ -211,8 +212,10 @@ class Wishlist(db.Model, PersistentBase):
             self.id = data.get("id")
             self.user_id = data["user_id"]
             self.is_enabled = data["is_enabled"]
-            self.created_at = data.get("created_at")
-            self.last_updated = data.get("last_updated")
+            created_at = data.get("created_at")
+            self.created_at = datetime.fromisoformat(created_at) if created_at else None
+            last_updated = data.get("last_updated")
+            self.last_updated = datetime.fromisoformat(last_updated) if last_updated else None
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
