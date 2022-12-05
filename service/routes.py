@@ -6,14 +6,48 @@ This microservice handles the collection of products of a user wants
 """
 import logging
 from flask import jsonify, request, url_for, make_response, abort
+from flask_restx import Api, Resource, fields, reqparse, inputs
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
 
 # Import Flask application
-from . import app
+from . import app, api
 
 logger = logging.getLogger("flask.app")
 
+create_item_model = api.model('Item', {
+    'wishlist_id': fields.Integer(required=True, description='The ID of the wishlist in which the item is'),
+    'name': fields.Float(required=True, description='The name of the item'),
+    'category': fields.Float(required=True, description='The category of the item'),
+    'price': fields.Float(required=True, description='The price of the item'),
+    'description': fields.Float(required=True, description='The description of the item')
+})
+
+item_model = api.inherit(
+    'ItemModel',
+    create_item_model,
+    {
+        'id': fields.Integer(readOnly=True, 
+                            description='The unique id assigned internally by service'),
+    }
+)
+
+create_model = api.model('Wishlist', {
+    'name': fields.String(required=True, description='The name of the Wishlist'),
+    'user_id': fields.Integer(required=True, description='The user id of the user that created the wishlist'),
+    'is_enabled': fields.Boolean(required=True, description='Is the Wishlist enabled before order is placed?'),
+    'created_at': fields.DateTime(description='The date and time when the wishlist is created'),
+    'items': fields.List(fields.Nested(item_model, description='List of items that the wishlist contains'))
+})
+
+wishlist_model = api.inherit(
+    'WishlistModel', 
+    create_model,
+    {
+        '_id': fields.String(readOnly=True,
+                            description='The unique id assigned internally by service'),
+    }
+)
 
 ############################################################
 # Health Endpoint
