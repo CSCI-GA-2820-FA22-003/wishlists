@@ -378,6 +378,68 @@ class TestWishlistService(TestCase):
                 "last_updated does not match",
             )
 
+    def test_list_all_enabled_wishlist(self):
+        """It should list all enabled/not-enabled wishlists by query"""
+        random_count = random.randint(1, 10)
+        wishlists = self._create_wishlists(random_count)
+        resp = self.client.get(
+            f"{BASE_URL}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(wishlists))
+        for idx, new_wishlist in enumerate(data):
+            self.assertEqual(
+                new_wishlist["name"], wishlists[idx].name, "Names does not match"
+            )
+            self.assertEqual(
+                new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
+            )
+
+        # update the first wishlist to be not enabled
+        wishlist_new = data[0]
+        wishlist_new["is_enabled"] = False
+        wishlist_id = wishlist_new["id"]
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # get the updated wishlist
+        resp = self.client.get(
+            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.get_json()["name"], wishlist_new["name"],
+                         "Get result has the wrong wishlist name")
+        self.assertEqual(resp.get_json()["is_enabled"], wishlist_new["is_enabled"],
+                         "Get result has the wrong is_enabled. Expect: False")
+
+        # query all (not-enabled) wishlists
+        query_not_enabled_resp = self.client.get(
+            f"{BASE_URL}?is_enabled=false",
+            content_type="application/json"
+        )
+        self.assertEqual(query_not_enabled_resp.status_code, status.HTTP_200_OK)
+        data = query_not_enabled_resp.get_json()
+        self.assertEqual(data[0]["name"], wishlist_new["name"],
+                         "Query result has the wrong wishlist name")
+        self.assertEqual(data[0]["is_enabled"], wishlist_new["is_enabled"],
+                         "Query result has the wrong is_enabled. Expect: False")
+
+        # query all (enabled) wishlists
+        query_enabled_resp = self.client.get(
+            f"{BASE_URL}?is_enabled=true",
+            content_type="application/json"
+        )
+        self.assertEqual(query_not_enabled_resp.status_code, status.HTTP_200_OK)
+
+        data = query_enabled_resp.get_json()
+        for wishlist in data:
+            self.assertEqual(
+                wishlist["is_enabled"], True, "Query result has the wrong is_enabled. Expect: True"
+            )
+
     def test_list_all_wishlists_by_user_id(self):
         """It should list all of a users wishlists"""
         random_count = random.randint(1, 10)
