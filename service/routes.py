@@ -114,12 +114,18 @@ def get_wishlists():
     wishlists = []
     user_id = request.args.get("user_id")
     name = request.args.get("name")
+    enabled = request.args.get("is_enabled")
     app.logger.info("Request for all Wishlists")
 
     if user_id:
         wishlists = Wishlist.find_by_user_id(user_id)
     elif name:
         wishlists = Wishlist.find_by_name(name)
+    elif enabled:
+        if enabled.lower() == "true":
+            wishlists = Wishlist.find_by_enabled(True)
+        else:
+            wishlists = Wishlist.find_by_enabled(False)
     else:
         wishlists = Wishlist.all()
 
