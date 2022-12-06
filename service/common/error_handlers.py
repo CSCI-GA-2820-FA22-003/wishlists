@@ -22,6 +22,7 @@ from service.models import DataValidationError, DatabaseConnectionError
 from service import app, api
 from . import status
 
+
 ######################################################################
 # Special Error Handlers
 ######################################################################
@@ -35,6 +36,7 @@ def request_validation_error(error):
         'error': 'Bad Request',
         'message': message
     }, status.HTTP_400_BAD_REQUEST
+
 
 @api.errorhandler(DatabaseConnectionError)
 def database_connection_error(error):

@@ -66,7 +66,7 @@ class TestWishlistService(TestCase):
         for _ in range(count):
             wishlist = WishlistFactory(**kwargs)
             resp = self.client.post(
-                BASE_URL, 
+                BASE_URL,
                 json=wishlist.serialize(),
             )
             self.assertEqual(
@@ -176,7 +176,7 @@ class TestWishlistService(TestCase):
             f"{BASE_URL}/{wishlist_id}", content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # last_updated
         date_time = datetime.now()
         wishlist_new["last_updated"] = str(date_time)
@@ -188,7 +188,7 @@ class TestWishlistService(TestCase):
             f"{BASE_URL}/{wishlist_id}", content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # items
         items = [ItemFactory() for _ in range(2)]
         for item in items:
@@ -495,7 +495,7 @@ class TestWishlistService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), random_count)
-        for idx, new_item in enumerate(data):            
+        for idx, new_item in enumerate(data):
             self.assertEqual(items[idx].name, new_item['name'])
             self.assertEqual(items[idx].id, new_item['id'])
             self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
