@@ -495,9 +495,9 @@ class TestWishlistService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), random_count)
-        for idx, new_item in enumerate(data):
+        for idx, new_item in enumerate(data):            
+            self.assertEqual(items[idx].name, new_item['name'])
             self.assertEqual(items[idx].id, new_item['id'])
-            self.assertEqual(test_name, new_item['name'])
             self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
 
     def test_list_all_items_in_wishlist_by_category(self):
@@ -538,12 +538,12 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(len(data), test_count)
+        self.assertEqual(len(data), total_item_count)
         for idx, new_item in enumerate(data):
             self.assertEqual(items[idx].id, new_item['id'])
             self.assertEqual(items[idx].name, new_item['name'])
             self.assertEqual(items[idx].wishlist_id, new_item['wishlist_id'])
-            self.assertEqual(items[idx].category, test_category)
+            self.assertEqual(items[idx].category, new_item['category'])
 
     ######################################################################
     #  ITEM TEST CASES
@@ -568,13 +568,6 @@ class TestWishlistService(TestCase):
         self.assertEqual(data["price"], item.price)
         self.assertEqual(data["description"], item.description)
 
-        # Make sure location header is set
-        location = resp.headers.get("Location", None)
-        self.assertIsNotNone(location)
-
-        # Check that the location header was correct by getting it
-        resp = self.client.get(location, content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["name"], item.name)
         self.assertEqual(data["wishlist_id"], wishlist.id)
@@ -783,12 +776,12 @@ class TestWishlistService(TestCase):
 
         # Sad paths - item doesn't exist in deletion
         resp = self.client.delete(
-            f"{BASE_URL}/{wishlist_id}/items/{12341234213}"
+            f"{BASE_URL}/{wishlist_id}/items/{123412342}"
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         # Sad paths - wishlist doesn't exist in deletion
         resp = self.client.delete(
-            f"{BASE_URL}/2342343252/items/{item_id_to_delete}"
+            f"{BASE_URL}/23423439/items/{item_id_to_delete}"
         )
-        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
