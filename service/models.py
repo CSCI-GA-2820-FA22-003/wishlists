@@ -96,13 +96,26 @@ class PersistentBase():
 
     @classmethod
     def find_by_user_id(cls, user_id: str) -> list:
-        """Returns all wishlists that belong to the given
+        """Returns all wishlists that belong to the given user_id
 
         Args:
             user_id (string): the user_id of the entity you want to match
         """
         logger.info("Processing user_id query for %s ...", user_id)
         return cls.query.filter(cls.user_id == user_id)
+
+    @classmethod
+    def find_by_enabled(cls, is_enabled: bool) -> list:
+        """Returns all wishlists that's active
+
+        Args:
+            is_enabled (boolean): whether the wishlist is enabled or not
+        """
+        if is_enabled:
+            logger.info("Processing enabled query")
+        else:
+            logger.info("Processing non-enabled query")
+        return cls.query.filter(cls.is_enabled == is_enabled)
 
 ######################################################################
 #  I T E M   M O D E L

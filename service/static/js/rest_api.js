@@ -399,8 +399,7 @@ $(function () {
 
         let name = $("#wishlist_name").val();
         let user_id = $("#wishlist_uid").val();
-        let is_enabled = $("#wishlist_enabled").val() == "true";
-
+        let is_enabled = $("#wishlist_enabled").val();
         let queryString = ""
 
         if (name) {
@@ -415,9 +414,9 @@ $(function () {
         }
         if (is_enabled) {
             if (queryString.length > 0) {
-                queryString += '&available=' + is_enabled
+                queryString += '&is_enabled=' + is_enabled
             } else {
-                queryString += 'available=' + is_enabled
+                queryString += 'is_enabled=' + is_enabled
             }
         }
 
