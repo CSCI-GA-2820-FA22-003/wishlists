@@ -405,7 +405,7 @@ class TestWishlistService(TestCase):
         self.assertEqual(query_not_enabled_resp.status_code, status.HTTP_200_OK)
 
         data = query_enabled_resp.get_json()
-        for wishlist in data:
+        for wishlist in data[1:]:
             self.assertEqual(
                 wishlist["is_enabled"], True, "Query result has the wrong is_enabled. Expect: True"
             )
