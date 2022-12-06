@@ -6,8 +6,7 @@ This microservice handles the collection of products of a user wants
 """
 import logging
 from flask import jsonify, request, url_for, make_response, abort
-# from flask_restx import Api, Resource, fields, reqparse, inputs
-from flask_restx import fields
+from flask_restx import Api, Resource, fields, reqparse, inputs
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
 
@@ -16,37 +15,12 @@ from . import app, api
 
 logger = logging.getLogger("flask.app")
 
-create_item_model = api.model('Item', {
-    'wishlist_id': fields.Integer(required=True, description='The ID of the wishlist in which the item is'),
-    'name': fields.Float(required=True, description='The name of the item'),
-    'category': fields.Float(required=True, description='The category of the item'),
-    'price': fields.Float(required=True, description='The price of the item'),
-    'description': fields.Float(required=True, description='The description of the item')
-})
-
-item_model = api.inherit(
-    'ItemModel',
-    create_item_model,
-    {
-        'id': fields.Integer(readOnly=True, description='The unique id assigned internally by service'),
-    }
-)
-
-create_model = api.model('Wishlist', {
-    'name': fields.String(required=True, description='The name of the Wishlist'),
-    'user_id': fields.Integer(required=True, description='The user id of the user that created the wishlist'),
-    'is_enabled': fields.Boolean(required=True, description='Is the Wishlist enabled before order is placed?'),
-    'created_at': fields.DateTime(description='The date and time when the wishlist is created'),
-    'items': fields.List(fields.Nested(item_model, description='List of items that the wishlist contains'))
-})
-
-wishlist_model = api.inherit(
-    'WishlistModel',
-    create_model,
-    {
-        '_id': fields.String(readOnly=True, description='The unique id assigned internally by service'),
-    }
-)
+# query string arguments
+wishlist_args = reqparse.RequestParser()
+wishlist_args.add_argument('name', type=str, required=False, location='args',
+                          help='Find the Product by name')
+wishlist_args.add_argument('user_id', type=str, required=False, location='args',
+                          help='List Products by user id')
 
 ############################################################
 # Health Endpoint
@@ -68,110 +42,291 @@ def index():
     """Base URL for our service"""
     return app.send_static_file("index.html")
 
+
+create_item_model = api.model('Item', {
+    'wishlist_id': fields.Integer(required=True, description='The ID of the wishlist in which the item is'),
+    'name': fields.String(required=True, description='The name of the item'),
+    'category': fields.String(required=True, description='The category of the item'),
+    'price': fields.Float(required=True, description='The price of the item'),
+    'description': fields.String(required=True, description='The description of the item')
+})
+
+item_model = api.inherit(
+    'ItemModel',
+    create_item_model,
+    {
+        'id': fields.Integer(readOnly=True, description='The unique id assigned internally by service'),
+    }
+)
+
+create_model = api.model('Wishlist', {
+    'name': fields.String(required=True, description='The name of the Wishlist'),
+    'user_id': fields.Integer(required=True, description='The user id of the user that created the wishlist'),
+    'is_enabled': fields.Boolean(required=True, description='Is the Wishlist enabled before order is placed?'),
+    'items': fields.List(fields.Nested(item_model, description='List of items that the wishlist contains'))
+})
+
+wishlist_model = api.inherit(
+    'WishlistModel',
+    create_model,
+    {
+        'id': fields.Integer(readOnly=True, description='The unique id assigned internally by service'),
+    }
+)
+
+######################################################################
+#  PATH: /wishlists/{id}
+######################################################################
+@api.route('/wishlists/<wishlist_id>')
+@api.param('wishlist_id', 'The Wishlist identifier')
+class WishlistResource(Resource):
+    """
+    WishlistResource class
+    Allows the manipulation of a single Wishlist
+    GET /wishlist{id} - Returns a Wishlist with the id
+    """
+
+    # ------------------------------------------------------------------
+    # RETRIEVE A WISHLIST
+    # ------------------------------------------------------------------
+    @api.doc('get_wishlist')
+    @api.response(404, 'Wishlist not found')
+    @api.marshal_with(wishlist_model)
+    def get(self, wishlist_id):
+        """
+        Retrieve a single Wishlist
+        This endpoint will return a Wishlist based on it's id
+        """
+        app.logger.info("Request for Wishlist with id: %s", wishlist_id)
+
+        # See if the wishlist exists and abort if it doesn't
+        wishlist = Wishlist.find(wishlist_id)
+        if not wishlist:
+            abort(
+                status.HTTP_404_NOT_FOUND,
+                f"Wishlist with id '{wishlist_id}' could not be found.",
+            )
+
+        return wishlist.serialize(), status.HTTP_200_OK
+
+    # ------------------------------------------------------------------
+    # UPDATE AN EXISTING WISHLIST
+    # ------------------------------------------------------------------
+    @api.doc('update_wishlist')
+    @api.response(400, 'The posted Wishlist data was not valid')
+    @api.response(404, 'Wishlist not found')
+    @api.expect(wishlist_model)
+    @api.marshal_with(wishlist_model)
+    def put(self, wishlist_id):
+        """
+        Update a Wishlist
+        This endpoint will update a Wishlist based on the body that is posted
+        """
+        app.logger.info(
+            "Request to update wishlist with id: %s", wishlist_id)
+        wishlist = Wishlist.find(wishlist_id)
+        if not wishlist:
+            abort(status.HTTP_404_NOT_FOUND,
+                  f"Wishlist with id '{wishlist_id}' was not found.")
+        app.logger.debug('Payload = %s', api.payload)
+        wishlist.deserialize(request.get_json())
+        wishlist.id = wishlist_id
+        wishlist.update()
+        return wishlist.serialize(), status.HTTP_200_OK
+
+    # ------------------------------------------------------------------
+    # DELETE AN WISHLIST
+    # ------------------------------------------------------------------
+    @api.doc('delete_wishlist')
+    @api.response(204, 'Wishlist deleted')
+    @api.response(404, 'Wishlist not found')
+    def delete(self, wishlist_id):
+        """
+        Delete a wishlist
+        This endpoint will delete a Wishlist based the on id specified in the path
+        """
+        app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+
+        # Retrieve the wishlist to delete and delete it if it exists
+        wishlist = Wishlist.find(wishlist_id)
+        if wishlist:
+            for item in wishlist.items:
+                item.delete()
+            wishlist.delete()
+
+        return '', status.HTTP_204_NO_CONTENT
+
+
+######################################################################
+#  PATH: /wishlists
+######################################################################
+@api.route('/wishlists', strict_slashes=False)
+class WishlistCollection(Resource):
+    """ Handles all interactions with collections of Wishlists """
+    # ------------------------------------------------------------------
+    # LIST ALL WISHLISTS
+    # ------------------------------------------------------------------
+    @api.doc('list_wishlists')
+    @api.expect(wishlist_args, validate=True)
+    @api.marshal_list_with(wishlist_model)
+    def get(self):
+        """ Returns all of the Wishlists """
+        app.logger.info('Request to list Wishlists...')
+
+        wishlists = []
+        args = wishlist_args.parse_args()
+        user_id = args['user_id']
+        name = args['name']
+        # user_id = request.args.get("user_id")
+        # name = request.args.get("name")
+        app.logger.info("Request for all Wishlists")
+
+        if user_id:
+            wishlists = Wishlist.find_by_user_id(user_id)
+        elif name:
+            wishlists = Wishlist.find_by_name(name)
+        else:
+            wishlists = Wishlist.all()
+
+        result = [wishlist.serialize() for wishlist in wishlists]
+        result = sorted(result, key=lambda wishlist: wishlist['id'])
+        return result, status.HTTP_200_OK
+
+    # ------------------------------------------------------------------
+    # ADD A NEW WISHLIST
+    # ------------------------------------------------------------------
+    @api.doc('create_wishlists')
+    @api.response(400, 'The posted data was not valid')
+    @api.expect(create_model)
+    @api.marshal_with(wishlist_model, code=201)
+    def post(self):
+        """
+        Creates a Wishlist
+        This endpoint will create a Wishlist based the data in the body that is posted
+
+        """
+        app.logger.info("Request to create an Wishlist")
+        check_content_type("application/json")
+        data = request.get_json()
+        app.logger.info("Request to create an Wishlist with data: %s", data)
+
+        # Create the wishlist
+        wishlist = Wishlist()
+        wishlist.deserialize(data)
+        wishlist.create()
+
+        # Create a message to return
+        message = wishlist.serialize()
+        location_url = api.url_for(WishlistResource, wishlist_id=wishlist.id, _external=True)
+        app.logger.info(f"Created Wishlist: {message}")
+        return wishlist.serialize(), status.HTTP_201_CREATED, {'Location': location_url}
+
+
+
 ######################################################################
 # CREATE A NEW WISHLIST
 ######################################################################
 
 
-@app.route("/wishlists", methods=["POST"])
-def create_wishlists():
-    """
-    Creates a Wishlist
-    This endpoint will create a Wishlist based the data in the body that is posted
-    """
-    app.logger.info("Request to create an Wishlist")
-    check_content_type("application/json")
-    data = request.get_json()
-    app.logger.info("Request to create an Wishlist with data: %s", data)
+# @app.route("/api/wishlists", methods=["POST"])
+# def create_wishlists():
+#     """
+#     Creates a Wishlist
+#     This endpoint will create a Wishlist based the data in the body that is posted
+#     """
+#     app.logger.info("Request to create an Wishlist")
+#     check_content_type("application/json")
+#     data = request.get_json()
+#     app.logger.info("Request to create an Wishlist with data: %s", data)
 
-    # Create the wishlist
-    wishlist = Wishlist()
-    wishlist.deserialize(data)
-    wishlist.create()
+#     # Create the wishlist
+#     wishlist = Wishlist()
+#     wishlist.deserialize(data)
+#     wishlist.create()
 
-    # Create a message to return
-    message = wishlist.serialize()
-    location_url = url_for(
-        "get_wishlist", wishlist_id=wishlist.id, _external=True)
+#     # Create a message to return
+#     message = wishlist.serialize()
+#     location_url = url_for(
+#         "get_wishlist", wishlist_id=wishlist.id, _external=True)
 
-    app.logger.info(f"Created Wishlist: {message}")
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
+#     app.logger.info(f"Created Wishlist: {message}")
+#     return make_response(
+#         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+#     )
 
 ######################################################################
 # LIST ALL WISHLISTS
 ######################################################################
 
 
-@app.route("/wishlists", methods=["GET"])
-def get_wishlists():
-    """
-    List all Wishlists
+# @app.route("/api/wishlists", methods=["GET"])
+# def get_wishlists():
+#     """
+#     List all Wishlists
 
-    This endpoint will return all wishlists belonging to current user
-    """
-    wishlists = []
-    user_id = request.args.get("user_id")
-    name = request.args.get("name")
-    app.logger.info("Request for all Wishlists")
+#     This endpoint will return all wishlists belonging to current user
+#     """
+#     wishlists = []
+#     user_id = request.args.get("user_id")
+#     name = request.args.get("name")
+#     app.logger.info("Request for all Wishlists")
 
-    if user_id:
-        wishlists = Wishlist.find_by_user_id(user_id)
-    elif name:
-        wishlists = Wishlist.find_by_name(name)
-    else:
-        wishlists = Wishlist.all()
+#     if user_id:
+#         wishlists = Wishlist.find_by_user_id(user_id)
+#     elif name:
+#         wishlists = Wishlist.find_by_name(name)
+#     else:
+#         wishlists = Wishlist.all()
 
-    result = [wishlist.serialize() for wishlist in wishlists]
-    result = sorted(result, key=lambda wishlist: wishlist['id'])
-    return make_response(jsonify(result), status.HTTP_200_OK)
+#     result = [wishlist.serialize() for wishlist in wishlists]
+#     result = sorted(result, key=lambda wishlist: wishlist['id'])
+#     return make_response(jsonify(result), status.HTTP_200_OK)
 
 ######################################################################
 # READ A WISHLIST
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>", methods=["GET"])
-def get_wishlist(wishlist_id):
-    """
-    Read a single Wishlist
+# @app.route("/api/wishlists/<int:wishlist_id>", methods=["GET"])
+# def get_wishlist(wishlist_id):
+#     """
+#     Read a single Wishlist
 
-    This endpoint will return an Wishlist based on it's id
-    """
-    app.logger.info("Request for Wishlist with id: %s", wishlist_id)
+#     This endpoint will return an Wishlist based on it's id
+#     """
+#     app.logger.info("Request for Wishlist with id: %s", wishlist_id)
 
-    # See if the wishlist exists and abort if it doesn't
-    wishlist = Wishlist.find(wishlist_id)
-    if not wishlist:
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Wishlist with id '{wishlist_id}' could not be found.",
-        )
+#     # See if the wishlist exists and abort if it doesn't
+#     wishlist = Wishlist.find(wishlist_id)
+#     if not wishlist:
+#         abort(
+#             status.HTTP_404_NOT_FOUND,
+#             f"Wishlist with id '{wishlist_id}' could not be found.",
+#         )
 
-    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+#     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE A WISHLIST
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>", methods=["DELETE"])
-def delete_wishlists(wishlist_id):
-    """
-    Delete a Wishlist
-    This endpoint will delete a Wishlist based the id specified in the path
-    """
-    app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
+# @app.route("/api/wishlists/<int:wishlist_id>", methods=["DELETE"])
+# def delete_wishlists(wishlist_id):
+#     """
+#     Delete a Wishlist
+#     This endpoint will delete a Wishlist based the id specified in the path
+#     """
+#     app.logger.info("Request to delete wishlist with id: %s", wishlist_id)
 
-    # Retrieve the wishlist to delete and delete it if it exists
-    wishlist = Wishlist.find(wishlist_id)
-    if wishlist:
-        for item in wishlist.items:
-            item.delete()
-        wishlist.delete()
+#     # Retrieve the wishlist to delete and delete it if it exists
+#     wishlist = Wishlist.find(wishlist_id)
+#     if wishlist:
+#         for item in wishlist.items:
+#             item.delete()
+#         wishlist.delete()
 
-    return make_response("", status.HTTP_204_NO_CONTENT)
+#     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
@@ -179,34 +334,34 @@ def delete_wishlists(wishlist_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>", methods=["PUT"])
-def update_wishlist(wishlist_id):
-    """
-    Update a wishlist
-    This endpoint will update a Wishlist based the request body
-    """
-    logger.info("Request to update Wishlist id %s", wishlist_id)
+# @app.route("/api/wishlists/<int:wishlist_id>", methods=["PUT"])
+# def update_wishlist(wishlist_id):
+#     """
+#     Update a wishlist
+#     This endpoint will update a Wishlist based the request body
+#     """
+#     logger.info("Request to update Wishlist id %s", wishlist_id)
 
-    check_content_type("application/json")
+#     check_content_type("application/json")
 
-    # See if the item exists and abort if it doesn't
-    wishlist = Wishlist.find(wishlist_id)
-    if not wishlist:
-        logger.error("ABORT: Wishlist with id '%s' could not be found.", wishlist_id)
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Wishlist with id '{wishlist_id}' could not be found.",
-        )
-    else:
-        logger.info("Wishlist with id %s found", wishlist_id)
+#     # See if the item exists and abort if it doesn't
+#     wishlist = Wishlist.find(wishlist_id)
+#     if not wishlist:
+#         logger.error("ABORT: Wishlist with id '%s' could not be found.", wishlist_id)
+#         abort(
+#             status.HTTP_404_NOT_FOUND,
+#             f"Wishlist with id '{wishlist_id}' could not be found.",
+#         )
+#     else:
+#         logger.info("Wishlist with id %s found", wishlist_id)
 
-    # Update from the json in the body of the request
-    data = request.get_json()
-    wishlist.deserialize(data)
-    wishlist.id = wishlist_id
-    wishlist.update()
+#     # Update from the json in the body of the request
+#     data = request.get_json()
+#     wishlist.deserialize(data)
+#     wishlist.id = wishlist_id
+#     wishlist.update()
 
-    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
+#     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
 ######################################################################
@@ -214,7 +369,7 @@ def update_wishlist(wishlist_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/clear", methods=["PUT"])
+@app.route("/api/wishlists/<int:wishlist_id>/clear", methods=["PUT"])
 def clear_wishlists(wishlist_id):
     """
     Clear a wishlist
@@ -252,7 +407,7 @@ def clear_wishlists(wishlist_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/items", methods=["POST"])
+@app.route("/api/wishlists/<int:wishlist_id>/items", methods=["POST"])
 def create_items(wishlist_id):
     """
     Adds an item to a wishlist
@@ -292,7 +447,7 @@ def create_items(wishlist_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
+@app.route("/api/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["GET"])
 def get_items(wishlist_id, item_id):
     """
     Get an Item
@@ -318,7 +473,7 @@ def get_items(wishlist_id, item_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
+@app.route("/api/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["PUT"])
 def update_items(wishlist_id, item_id):
     """
     Update an Item
@@ -358,7 +513,7 @@ def update_items(wishlist_id, item_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
+@app.route("/api/wishlists/<int:wishlist_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_items(wishlist_id, item_id):
     """
     Delete an Item from a wishlist
@@ -391,7 +546,7 @@ def delete_items(wishlist_id, item_id):
 ######################################################################
 
 
-@app.route("/wishlists/<int:wishlist_id>/items", methods=["GET"])
+@app.route("/api/wishlists/<int:wishlist_id>/items", methods=["GET"])
 def list_items(wishlist_id):
     """
     List all items

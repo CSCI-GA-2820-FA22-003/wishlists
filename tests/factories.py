@@ -16,6 +16,7 @@ class WishlistFactory(factory.Factory):
         """Persistent class"""
         model = Wishlist
 
+    id = factory.Sequence(lambda n: n)
     user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
     is_enabled = FuzzyChoice(choices=[True, False])

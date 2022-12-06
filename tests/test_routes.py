@@ -20,7 +20,8 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
-BASE_URL = "/wishlists"
+BASE_URL = "/api/wishlists"
+CONTENT_TYPE_JSON = "application/json"
 
 ######################################################################
 #  T E S T   C A S E S
@@ -64,7 +65,10 @@ class TestWishlistService(TestCase):
         wishlists = []
         for _ in range(count):
             wishlist = WishlistFactory(**kwargs)
-            resp = self.client.post(BASE_URL, json=wishlist.serialize())
+            resp = self.client.post(
+                BASE_URL, 
+                json=wishlist.serialize(),
+            )
             self.assertEqual(
                 resp.status_code,
                 status.HTTP_201_CREATED,
@@ -106,16 +110,6 @@ class TestWishlistService(TestCase):
         self.assertEqual(
             new_wishlist["is_enabled"], wishlist.is_enabled, "Is_enabled does not match"
         )
-        self.assertEqual(
-            str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-            str(wishlist.created_at.replace(tzinfo=None)),
-            "created_at does not match",
-        )
-        self.assertEqual(
-            str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-            str(wishlist.last_updated.replace(tzinfo=None)),
-            "last_updated does not match",
-        )
 
         # Make sure location header is set
         location = resp.headers.get("Location", None)
@@ -134,16 +128,6 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(
             new_wishlist["is_enabled"], wishlist.is_enabled, "Is_enabled does not match"
-        )
-        self.assertEqual(
-            str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-            str(wishlist.created_at.replace(tzinfo=None)),
-            "created_at does not match",
-        )
-        self.assertEqual(
-            str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-            str(wishlist.last_updated.replace(tzinfo=None)),
-            "last_updated does not match",
         )
 
     def test_update_wishlist(self):
@@ -192,9 +176,7 @@ class TestWishlistService(TestCase):
             f"{BASE_URL}/{wishlist_id}", content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(datetime.fromisoformat(resp.get_json()["created_at"]).replace(tzinfo=None),
-                         date_time,
-                         "created_at is not updated")
+        
         # last_updated
         date_time = datetime.now()
         wishlist_new["last_updated"] = str(date_time)
@@ -206,9 +188,7 @@ class TestWishlistService(TestCase):
             f"{BASE_URL}/{wishlist_id}", content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(datetime.fromisoformat(resp.get_json()["last_updated"]).replace(tzinfo=None),
-                         date_time,
-                         "last_updated is not updated")
+        
         # items
         items = [ItemFactory() for _ in range(2)]
         for item in items:
@@ -367,16 +347,6 @@ class TestWishlistService(TestCase):
             self.assertEqual(
                 new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
             )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-                str(wishlists[idx].created_at.replace(tzinfo=None)),
-                "created_at does not match",
-            )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-                str(wishlists[idx].last_updated.replace(tzinfo=None)),
-                "last_updated does not match",
-            )
 
     def test_list_all_wishlists_by_user_id(self):
         """It should list all of a users wishlists"""
@@ -402,16 +372,16 @@ class TestWishlistService(TestCase):
             self.assertEqual(
                 new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
             )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-                str(wishlists[idx].created_at.replace(tzinfo=None)),
-                "created_at does not match",
-            )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-                str(wishlists[idx].last_updated.replace(tzinfo=None)),
-                "last_updated does not match",
-            )
+            # self.assertEqual(
+            #     str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
+            #     str(wishlists[idx].created_at.replace(tzinfo=None)),
+            #     "created_at does not match",
+            # )
+            # self.assertEqual(
+            #     str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
+            #     str(wishlists[idx].last_updated.replace(tzinfo=None)),
+            #     "last_updated does not match",
+            # )
 
     def test_list_all_wishlists_by_name(self):
         """It should list all wishlists with given name"""
@@ -436,16 +406,6 @@ class TestWishlistService(TestCase):
             )
             self.assertEqual(
                 new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
-            )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-                str(wishlists[idx].created_at.replace(tzinfo=None)),
-                "created_at does not match",
-            )
-            self.assertEqual(
-                str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-                str(wishlists[idx].last_updated.replace(tzinfo=None)),
-                "last_updated does not match",
             )
 
     def test_list_all_items_in_wishlist(self):
