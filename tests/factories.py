@@ -16,9 +16,10 @@ class WishlistFactory(factory.Factory):
         """Persistent class"""
         model = Wishlist
 
+    id = factory.Sequence(lambda n: n)
     user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
-    is_enabled = FuzzyChoice(choices=[True, False])
+    is_enabled = True
     created_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
     last_updated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
 

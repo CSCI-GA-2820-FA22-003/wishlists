@@ -24,7 +24,7 @@ api = Api(
         description='This is a sample server Wishlist server.',
         default='wishlists',
         default_label='Wishlist operations',
-        doc='/apidocs',  # default also could use doc='/apidocs/'
+        doc='/apidocs',  # default also could use doc='/apidocs/',
         prefix='/api',
     )
 

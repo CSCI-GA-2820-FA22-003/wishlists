@@ -14,7 +14,7 @@ def step_impl(context):
 
 @given('the following wishlists')
 def step_impl(context):
-    rest_endpoint = f"{context.BASE_URL}/wishlists"
+    rest_endpoint = f"{context.BASE_URL}/api/wishlists"
     context.resp = requests.get(rest_endpoint)
     expect(context.resp.status_code).to_equal(200)
     for wishlist in context.resp.json():
@@ -36,7 +36,7 @@ def step_impl(context):
 
 @given('the following items')
 def step_impl(context):
-    rest_endpoint = f"{context.BASE_URL}/wishlists"
+    rest_endpoint = f"{context.BASE_URL}/api/wishlists"
     #assuming no items since all past wishlists are deleted
     #add all items to the first wishlist
     context.resp = requests.get(rest_endpoint)
