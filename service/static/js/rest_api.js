@@ -209,6 +209,39 @@ $(function () {
     });
 
     // ****************************************
+    // Clear a Wishlist
+    // ****************************************
+
+    $("#clear-wishlist-btn").click(function () {
+        
+        let wishlist_id = $("#wishlist_id").val();   
+
+        let data = {
+            wishlist_id,
+            items: []
+        };
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+                type: "PUT",
+                url: `/api/wishlists/${wishlist_id}/clear`,
+                contentType: "application/json",
+                data: JSON.stringify(data)
+            })
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Update an Item in a Wishlist
     // ****************************************
 
