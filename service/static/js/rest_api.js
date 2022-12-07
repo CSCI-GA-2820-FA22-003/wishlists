@@ -214,12 +214,7 @@ $(function () {
 
     $("#clear-wishlist-btn").click(function () {
         
-        let wishlist_id = $("#wishlist_id").val();   
-
-        let data = {
-            wishlist_id,
-            items: []
-        };
+        let wishlist_id = $("#wishlist_id").val();   ;
 
         $("#flash_message").empty();
 
@@ -227,8 +222,8 @@ $(function () {
                 type: "PUT",
                 url: `/api/wishlists/${wishlist_id}/clear`,
                 contentType: "application/json",
-                data: JSON.stringify(data)
-            })
+                data: '',
+            });
 
         ajax.done(function(res){
             update_form_data(res)

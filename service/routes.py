@@ -412,10 +412,7 @@ def clear_wishlists(wishlist_id):
     wishlist_data = wishlist.serialize()
     for item_data in wishlist_data["items"]:
         Item.find(item_data["id"]).delete()
-    wishlist_data["items"] = []
-    wishlist.deserialize(wishlist_data)
-    wishlist.update()
-
+    wishlist = Wishlist.find(wishlist_id)
     return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
 
 
