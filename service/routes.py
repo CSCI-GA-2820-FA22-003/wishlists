@@ -5,7 +5,7 @@ Wishlist Service
 This microservice handles the collection of products of a user wants
 """
 import logging
-from flask import jsonify, request, make_response, abort
+from flask import jsonify, request, abort
 from flask_restx import Resource, fields, reqparse
 from service.common import status  # HTTP Status Codes
 from service.models import Wishlist, Item
@@ -382,39 +382,34 @@ class ItemResource(Resource):
 
 
 ######################################################################
-# CLEAR A WISHLIST
+#  PATH: /wishlists/<wishlist_id>/clear
 ######################################################################
-
-
-@app.route("/api/wishlists/<int:wishlist_id>/clear", methods=["PUT"])
-def clear_wishlists(wishlist_id):
-    """
-    Clear a wishlist
-    This endpoint will clear a Wishlist Items in the Wishlist
-    """
-    logger.info("Request to clear items of Wishlist id %s", wishlist_id)
-
-    check_content_type("application/json")
-
-    # See if the item exists and abort if it doesn't
-    wishlist = Wishlist.find(wishlist_id)
-    if not wishlist:
-        logger.error("ABORT: Wishlist with id '%s' could not be found.", wishlist_id)
-        abort(
-            status.HTTP_404_NOT_FOUND,
-            f"Wishlist with id '{wishlist_id}' could not be found.",
-        )
-    else:
-        logger.info("Wishlist with id %s found", wishlist_id)
-
-    # Clear the items list in the wishlist
-    wishlist.id = wishlist_id
-    wishlist_data = wishlist.serialize()
-    for item_data in wishlist_data["items"]:
-        Item.find(item_data["id"]).delete()
-    wishlist = Wishlist.find(wishlist_id)
-    return make_response(jsonify(wishlist.serialize()), status.HTTP_200_OK)
-
+@api.route('/wishlists/<int:wishlist_id>/clear', strict_slashes=False)
+class WishlistUtilsCollection(Resource):
+    """ Handles all interactions with collections of Wishlists """
+    # ------------------------------------------------------------------
+    # CLEAR A WISHLIST
+    # ------------------------------------------------------------------
+    @api.doc('clear_wishlist')
+    @api.response(404, 'Wishlist not found')
+    @api.marshal_with(wishlist_model)
+    def put(self, wishlist_id):
+        """
+        Clear a Wishlist
+        This endpoint will clear a Wishlist of its items
+        """
+        app.logger.info(
+            "Request to clear wishlist with id: %s", wishlist_id)
+        wishlist = Wishlist.find(wishlist_id)
+        if not wishlist:
+            abort(status.HTTP_404_NOT_FOUND,
+                  f"Wishlist with id '{wishlist_id}' was not found.")
+        wishlist.id = wishlist_id
+        wishlist_data = wishlist.serialize()
+        for item_data in wishlist_data["items"]:
+            Item.find(item_data["id"]).delete()
+        wishlist = Wishlist.find(wishlist_id)
+        return wishlist.serialize(), status.HTTP_200_OK
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
