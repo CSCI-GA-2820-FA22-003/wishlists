@@ -396,7 +396,7 @@ class WishlistUtilsCollection(Resource):
     def put(self, wishlist_id):
         """
         Clear a Wishlist
-        This endpoint will clear a Wishlist of its items
+        This endpoint will clear the given Wishlist of its items
         """
         app.logger.info(
             "Request to clear wishlist with id: %s", wishlist_id)
