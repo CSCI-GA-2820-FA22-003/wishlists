@@ -108,7 +108,7 @@ $(function () {
 
         let data = {
             id,
-	        wishlist_id: wishlist_id, 
+	        wishlist_id: wishlist_id,
             name,
             category,
             price: parseInt(price),
@@ -174,11 +174,11 @@ $(function () {
     // ****************************************
 
     $("#update-btn").click(function () {
-        
+
         let wishlist_id = $("#wishlist_id").val();
         let name = $("#wishlist_name").val();
         let user_id = $("#wishlist_uid").val();
-        let is_enabled = $("#wishlist_enabled").val() === 'true';        
+        let is_enabled = $("#wishlist_enabled").val() === 'true';
 
         let data = {
             wishlist_id,
@@ -213,7 +213,7 @@ $(function () {
     // ****************************************
 
     $("#clear-wishlist-btn").click(function () {
-        
+
         let wishlist_id = $("#wishlist_id").val();   ;
 
         $("#flash_message").empty();
@@ -241,7 +241,7 @@ $(function () {
     // ****************************************
 
     $("#update-item-btn").click(function () {
-        
+
         if($("#items_title")[0].style.display == 'none'){
             flash_message("No Wishlist retrieved");
             return;
@@ -464,6 +464,7 @@ $(function () {
             var table = document.getElementById("wishlist_results_body");
             table.innerHTML = "";
             let firstWishlist = "";
+            console.log("res=", res);
             res = res.sort((a,b) => (a.id > b.id) ? 1 : -1)
             for(let i = 0; i < res.length; i++) {
                 let wishlist = res[i];
