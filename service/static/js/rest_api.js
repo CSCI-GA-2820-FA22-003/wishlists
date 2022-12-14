@@ -32,6 +32,7 @@ $(function () {
         $("#wishlist_uid").val("");
         document.getElementById("wishlist_items").style.display="none";
         document.getElementById("items_title").style.display="none";
+        document.getElementById("item_data").style.display="none";
         document.getElementById("wishlist_results").style.display="none";
         document.getElementById("wishlists_title").style.display="none";
     }
@@ -148,6 +149,7 @@ $(function () {
         let wishlist_id = $("#items_title")[0].innerHTML;
         wishlist_id = wishlist_id.slice(wishlist_id.lastIndexOf(' ')+1);
         let id = $("#item_id").val();
+        $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "DELETE",
@@ -303,6 +305,7 @@ $(function () {
             update_form_data(res);
             document.getElementById("wishlist_items").style.display="table";
             document.getElementById("items_title").style.display="block";
+            document.getElementById("item_data").style.display="block";
             document.getElementById("items_title").innerHTML=`Items in Wishlist ${res.id}`;
             var table = document.getElementById("wishlist_items_body");
             table.innerHTML = "";

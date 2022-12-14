@@ -4,7 +4,6 @@ Models for YourResourceModel
 All of the models are stored in this module
 """
 import logging
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 
@@ -197,7 +196,7 @@ class Wishlist(db.Model, PersistentBase):
     name = db.Column(db.String(64))
     is_enabled = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    last_updated = db.Column(db.DateTime(timezone=True), onupdate=func.now())
+    last_updated = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     items = db.relationship("Item", backref="wishlist", passive_deletes=True)
 
     def __repr__(self):
@@ -210,8 +209,8 @@ class Wishlist(db.Model, PersistentBase):
             "user_id": self.user_id,
             "name": self.name,
             "is_enabled": self.is_enabled,
-            "created_at": str(self.created_at),
-            "last_updated": str(self.last_updated),
+            "created_at": str(self.created_at).replace(' ', 'T'),
+            "last_updated": str(self.last_updated).replace(' ', 'T'),
             "items": [],
         }
         for item in self.items:
@@ -229,12 +228,7 @@ class Wishlist(db.Model, PersistentBase):
             self.id = data.get("id")
             self.user_id = data["user_id"]
             self.is_enabled = data["is_enabled"]
-            created_at = data.get("created_at")
-            self.created_at = datetime.fromisoformat(created_at) if created_at else None
-            last_updated = data.get("last_updated")
-            self.last_updated = (datetime.fromisoformat(last_updated)
-                                 if last_updated
-                                 else datetime.now())
+
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
