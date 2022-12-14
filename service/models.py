@@ -228,6 +228,7 @@ class Wishlist(db.Model, PersistentBase):
             self.id = data.get("id")
             self.user_id = data["user_id"]
             self.is_enabled = data["is_enabled"]
+
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
