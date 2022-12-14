@@ -471,19 +471,13 @@ $(function () {
                 var id=row.insertCell(0);
                 var name=row.insertCell(1);
                 var user_id=row.insertCell(2);
-                var created_at=row.insertCell(3);
-                var last_updated=row.insertCell(4);
-                var is_enabled=row.insertCell(5);
+                var is_enabled=row.insertCell(3);
                 id.innerHTML = wishlist.id;
                 id.id = "wishlist_entry-"+(i+1)+"-id";
                 name.innerHTML = wishlist.name;
                 name.id = "wishlist_entry-"+(i+1)+"-name";
                 user_id.innerHTML = wishlist.user_id;
                 user_id.id = "wishlist_entry-"+(i+1)+"-user_id";
-                created_at.innerHTML = wishlist.created_at;
-                created_at.id = "wishlist_entry-"+(i+1)+"-created_at";
-                last_updated.innerHTML = wishlist.last_updated;
-                last_updated.id = "wishlist_entry-"+(i+1)+"-last_updated";
                 is_enabled.innerHTML = wishlist.is_enabled;
                 is_enabled.id = "wishlist_entry-"+(i+1)+"-is_enabled";
                 if (i == 0) {

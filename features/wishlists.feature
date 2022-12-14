@@ -6,10 +6,10 @@ Feature: The store service back-end
 Background:
     Given the server is started
     And the following wishlists
-        | id      | user_id  | name                    | created_at                         | last_updated                     |
-        | 1       | 12       | Christmas Wishlist      | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
-        | 2       | 5        | Birthday Wishlist       | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
-        | 4       | 12       | Secondary Wishlist      | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
+        | id      | user_id  | name                    |
+        | 1       | 12       | Christmas Wishlist      |
+        | 2       | 5        | Birthday Wishlist       |
+        | 4       | 12       | Secondary Wishlist      |
     And the following items
         | id      | wishlist_id  | name                    | category        | price         | description                     |
         | 1       | 1            | XBOX 360                | gaming          | 350           | Gaming console released in 2012 |

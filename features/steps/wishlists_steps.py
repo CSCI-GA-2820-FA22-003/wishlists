@@ -25,8 +25,6 @@ def step_impl(context):
             "id": row['id'],
             "user_id": row['user_id'],
             "name": row['name'],
-            "created_at": row['created_at'],
-            "last_updated": row['last_updated'],
             "is_enabled": True,
             "items": []
         }

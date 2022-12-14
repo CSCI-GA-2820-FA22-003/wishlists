@@ -1,10 +1,9 @@
 """
 Python library for creating wishlists and items for tests
 """
-from datetime import datetime, timezone
 import random
 import factory
-from factory.fuzzy import FuzzyChoice, FuzzyDateTime
+from factory.fuzzy import FuzzyChoice
 from service.models import Wishlist, Item
 
 
@@ -20,8 +19,6 @@ class WishlistFactory(factory.Factory):
     user_id = random.randint(1, 1000)
     name = 'Wishlist #'+str(random.randint(1, 100))
     is_enabled = True
-    created_at = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
-    last_updated = FuzzyDateTime(datetime(2008, 1, 1, tzinfo=timezone.utc))
 
     @factory.post_generation
     def items(self, create, extracted, **kwargs):   # pylint: disable=method-hidden, unused-argument

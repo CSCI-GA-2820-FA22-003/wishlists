@@ -9,7 +9,6 @@ import os
 import logging
 import random
 from unittest import TestCase
-from datetime import datetime
 from service import app
 from service.models import db, init_db, Wishlist, Item
 from service.common import status  # HTTP Status Codes
@@ -165,29 +164,6 @@ class TestWishlistService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp.get_json()["user_id"], 123,
                          "user_id is not updated")
-        # created_at
-        date_time = datetime.now()
-        wishlist_new["created_at"] = str(date_time)
-        resp = self.client.put(
-            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        resp = self.client.get(
-            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-        # last_updated
-        date_time = datetime.now()
-        wishlist_new["last_updated"] = str(date_time)
-        resp = self.client.put(
-            f"{BASE_URL}/{wishlist_id}", json=wishlist_new, content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        resp = self.client.get(
-            f"{BASE_URL}/{wishlist_id}", content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         # items
         items = [ItemFactory() for _ in range(2)]
@@ -434,16 +410,6 @@ class TestWishlistService(TestCase):
             self.assertEqual(
                 new_wishlist["is_enabled"], wishlists[idx].is_enabled, "Is_enabled does not match"
             )
-            # self.assertEqual(
-            #     str(datetime.fromisoformat(new_wishlist["created_at"]).replace(tzinfo=None)),
-            #     str(wishlists[idx].created_at.replace(tzinfo=None)),
-            #     "created_at does not match",
-            # )
-            # self.assertEqual(
-            #     str(datetime.fromisoformat(new_wishlist["last_updated"]).replace(tzinfo=None)),
-            #     str(wishlists[idx].last_updated.replace(tzinfo=None)),
-            #     "last_updated does not match",
-            # )
 
     def test_list_all_wishlists_by_name(self):
         """It should list all wishlists with given name"""
