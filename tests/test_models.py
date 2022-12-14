@@ -191,8 +191,6 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(serial_wishlist["user_id"], wishlist.user_id)
         self.assertEqual(serial_wishlist["name"], wishlist.name)
         self.assertEqual(serial_wishlist["is_enabled"], wishlist.is_enabled)
-        self.assertEqual(serial_wishlist["created_at"], str(wishlist.created_at))
-        self.assertEqual(serial_wishlist["last_updated"], str(wishlist.last_updated))
         self.assertEqual(len(serial_wishlist["items"]), 1)
 
         items = serial_wishlist["items"]
@@ -216,8 +214,6 @@ class WishlistModel(unittest.TestCase):
         self.assertEqual(new_wishlist.user_id, wishlist.user_id)
         self.assertEqual(new_wishlist.name, wishlist.name)
         self.assertEqual(new_wishlist.is_enabled, wishlist.is_enabled)
-        self.assertEqual(new_wishlist.created_at, wishlist.created_at)
-        self.assertEqual(new_wishlist.last_updated, wishlist.last_updated)
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize a Wishlist with a KeyError"""
