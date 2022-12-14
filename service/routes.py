@@ -20,21 +20,28 @@ wishlist_args = reqparse.RequestParser()
 wishlist_args.add_argument('name', type=str, required=False, location='args', help='Find the Product by name')
 wishlist_args.add_argument('user_id', type=str, required=False, location='args', help='List Products by user id')
 
+
 ############################################################
 # Health Endpoint
 ############################################################
-
-
 @app.route("/health")
 def health():
     """Health Status"""
     return jsonify(dict(status="OK")), status.HTTP_200_OK
 
+
+############################################################
+# Test Endpoint
+############################################################
+@app.route("/test")
+def test():
+    """Test Status"""
+    return jsonify(dict(status="TEST")), status.HTTP_200_OK
+
+
 ######################################################################
 # GET INDEX
 ######################################################################
-
-
 @app.route("/")
 def index():
     """Base URL for our service"""
