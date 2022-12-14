@@ -234,7 +234,7 @@ class Wishlist(db.Model, PersistentBase):
             last_updated = data.get("last_updated")
             self.last_updated = (datetime.fromisoformat(last_updated)
                                  if last_updated
-                                 else str(datetime.now()))
+                                 else datetime.now())
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:
