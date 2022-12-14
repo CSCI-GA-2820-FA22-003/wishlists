@@ -66,8 +66,8 @@ item_model = api.inherit(
 
 create_model = api.model('Wishlist', {
     'name': fields.String(required=True, description='The name of the Wishlist'),
-    'created_at': fields.String(required=True, description='Creation time of the wishlist'),
-    'last_updated': fields.String(required=True, description='Last time the wishlist was updated'),
+    'created_at': fields.DateTime(required=True, description='Creation time of the wishlist'),
+    'last_updated': fields.DateTime(required=True, description='Last time the wishlist was updated'),
     'user_id': fields.Integer(required=True, description='The user id of the user that created the wishlist'),
     'is_enabled': fields.Boolean(required=True, description='Is the Wishlist enabled before order is placed?'),
     'items': fields.List(fields.Nested(item_model, description='List of items that the wishlist contains'))
@@ -345,7 +345,7 @@ class ItemResource(Resource):
         This endpoint will update an Item based the body that is posted
         """
         app.logger.info(
-            "Request to update Wishlist %s for Item id: %s", (item_id, wishlist_id)
+            "Request to update Wishlist %s for Item id: %s", item_id, wishlist_id
         )
         check_content_type("application/json")
         wishlist = Wishlist.find(wishlist_id)

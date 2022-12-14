@@ -7,9 +7,9 @@ Background:
     Given the server is started
     And the following wishlists
         | id      | user_id  | name                    | created_at                         | last_updated                     |
-        | 1       | 12       | Christmas Wishlist      | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
-        | 2       | 5        | Birthday Wishlist       | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
-        | 4       | 12       | Secondary Wishlist      | 2022-10-19 02:32:08.442973+00:00   | 2022-10-19 02:32:08.442973+00:00 |
+        | 1       | 12       | Christmas Wishlist      | 2022-10-19T02:32:08.442973+00:00   | 2022-10-19T02:32:08.442973+00:00 |
+        | 2       | 5        | Birthday Wishlist       | 2022-10-19T02:32:08.442973+00:00   | 2022-10-19T02:32:08.442973+00:00 |
+        | 4       | 12       | Secondary Wishlist      | 2022-10-19T02:32:08.442973+00:00   | 2022-10-19T02:32:08.442973+00:00 |
     And the following items
         | id      | wishlist_id  | name                    | category        | price         | description                     |
         | 1       | 1            | XBOX 360                | gaming          | 350           | Gaming console released in 2012 |
@@ -185,7 +185,7 @@ Scenario: Delete Item from Wishlist
     And I paste the item "id" field
     And I press the "delete-item" button
     Then I should see the message "Success"
-    # And I should see item "1" with "XBOX One X" in the "Name" field
+    And I should see item "1" with "XBOX One X" in the "Name" field
 
 Scenario: Retrieve Item from Wishlist
     When I visit the "Home Page"
@@ -221,7 +221,7 @@ Scenario: Update Item from Wishlist
     And I set the item "Description" to "Updated Gaming console released in 2012"
     And I press the "update-item" button
     Then I should see the message "Success"
-    # And I should see item "1" with "XBOX 3600" in the "Name" field
-    # And I should see item "1" with "GamingUpdated" in the "Category" field
-    # And I should see item "1" with "300" in the "Price" field
-    # And I should see item "1" with "Updated Gaming console released in 2012" in the "Description" field
+    And I should see item "1" with "XBOX 3600" in the "Name" field
+    And I should see item "1" with "GamingUpdated" in the "Category" field
+    And I should see item "1" with "300" in the "Price" field
+    And I should see item "1" with "Updated Gaming console released in 2012" in the "Description" field

@@ -148,6 +148,7 @@ $(function () {
         let wishlist_id = $("#items_title")[0].innerHTML;
         wishlist_id = wishlist_id.slice(wishlist_id.lastIndexOf(' ')+1);
         let id = $("#item_id").val();
+        $("#flash_message").empty();
 
         let ajax = $.ajax({
             type: "DELETE",
