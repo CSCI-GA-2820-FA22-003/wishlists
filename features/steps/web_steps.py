@@ -59,7 +59,7 @@ def step_impl(context, text, element_name):
 def step_impl(context, button):
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
-    sleep(0.5)
+    sleep(1)
 
 @then('I should see the message "{message}"')
 def step_impl(context, message):
