@@ -355,6 +355,13 @@ class ItemResource(Resource):
             "Request to update Wishlist %s for Item id: %s", item_id, wishlist_id
         )
         check_content_type("application/json")
+        try:
+            int(item_id)
+        except ValueError:
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Invalid Request: Please Check Request Details",
+            )
         wishlist = Wishlist.find(wishlist_id)
         if not wishlist:
             abort(status.HTTP_404_NOT_FOUND, f"Item with id '{wishlist_id}' was not found.")
@@ -371,7 +378,6 @@ class ItemResource(Resource):
         item.deserialize(api.payload)
         item.id = item_id
         item.update()
-
         return item.serialize(), status.HTTP_200_OK
 
     # ------------------------------------------------------------------

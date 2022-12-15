@@ -163,6 +163,8 @@ class Item(db.Model, PersistentBase):
             self.category = data["category"]
             self.price = data["price"]
             self.description = data["description"]
+            if not (self.name and self.id):
+                raise DataValidationError("Invalid Item Request: Check Details")
         except KeyError as error:
             raise DataValidationError("Invalid Item: missing " + error.args[0]) from error
         except TypeError as error:

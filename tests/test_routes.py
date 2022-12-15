@@ -670,6 +670,27 @@ class TestWishlistService(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_create_invalid_item(self):
+        """It should not Create an invalid item"""
+        wishlist = self._create_wishlists(1)[0]
+        item = ItemFactory(wishlist_id=wishlist.id)
+        json = item.serialize()
+        name = json["name"]
+        json["name"] = ""
+        resp = self.client.post(
+            f"{BASE_URL}/{wishlist.id}/items",
+            json=json,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        json["name"] = name
+        json["id"] = ""
+        resp = self.client.post(
+            BASE_URL, json=json, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_unsupported_media_type(self):
         """It should not Create when sending wrong media type"""
         wishlist = WishlistFactory()
@@ -702,6 +723,11 @@ class TestWishlistService(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        # Sad path when item id is string
+        resp = self.client.put(
+            f"{BASE_URL}/{wishlist.id}/items/{'abcde'}", json=data, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_item_not_found(self):
         """It should not Update an item that is not found"""
