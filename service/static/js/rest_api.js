@@ -291,8 +291,10 @@ $(function () {
     $("#retrieve-btn").click(function () {
 
         var id = $("#wishlist_id").val();
-
-
+        if(!id){
+            flash_message("No wishlist ID added");
+            return;
+        }
         let ajax = $.ajax({
             type: "GET",
             url: `/api/wishlists/${id}`,
