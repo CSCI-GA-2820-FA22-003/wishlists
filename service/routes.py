@@ -132,6 +132,13 @@ class WishlistResource(Resource):
         """
         app.logger.info(
             "Request to update wishlist with id: %s", wishlist_id)
+        try:
+            int(wishlist_id)
+        except ValueError:
+            abort(
+                status.HTTP_400_BAD_REQUEST,
+                "Invalid Request: Please Check Request Details",
+            )
         wishlist = Wishlist.find(wishlist_id)
         if not wishlist:
             abort(status.HTTP_404_NOT_FOUND,
@@ -394,7 +401,7 @@ class ItemResource(Resource):
 ######################################################################
 #  PATH: /wishlists/<wishlist_id>/clear
 ######################################################################
-@api.route('/wishlists/<int:wishlist_id>/clear', strict_slashes=False)
+@api.route('/wishlists/<int:wishlist_id>/clear')
 class WishlistUtilsCollection(Resource):
     """ Handles all interactions with collections of Wishlists """
     # ------------------------------------------------------------------

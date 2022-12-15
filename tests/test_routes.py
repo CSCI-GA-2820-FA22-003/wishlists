@@ -228,6 +228,11 @@ class TestWishlistService(TestCase):
             f"{BASE_URL}/{12345}", json=wishlist_new, content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        # Sad path when wishlist id is string
+        resp = self.client.put(
+            f"{BASE_URL}/{'abcde'}", json=wishlist_new, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_clear_wishlist(self):
         """It should Clear items of an already existing wishlist"""
