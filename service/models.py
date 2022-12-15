@@ -229,6 +229,9 @@ class Wishlist(db.Model, PersistentBase):
             self.user_id = data["user_id"]
             self.is_enabled = data["is_enabled"]
 
+            if (not (self.name and self.user_id)) or (self.is_enabled is None):
+                raise DataValidationError("Invalid Wishlist")
+
             # handle inner list of items
             items_list = data.get("items")
             for json_item in items_list:

@@ -130,6 +130,24 @@ class TestWishlistService(TestCase):
             new_wishlist["is_enabled"], wishlist.is_enabled, "Is_enabled does not match"
         )
 
+    def test_create_invalid_wishlist(self):
+        """It should not Create an invalid wishlist"""
+        wishlist = WishlistFactory()
+        json = wishlist.serialize()
+        name = json["name"]
+        json["name"] = ""
+        resp = self.client.post(
+            BASE_URL, json=json, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        json["name"] = name
+        json["user_id"] = ""
+        resp = self.client.post(
+            BASE_URL, json=json, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_update_wishlist(self):
         """It should Update an already existing wishlist"""
         wishlist = WishlistFactory()
